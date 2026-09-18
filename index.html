@@ -1,0 +1,10500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BMW Interactive Vehicle</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:#050608;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+
+button{
+  font:inherit;
+}
+
+#hero{
+  position:relative;
+  height:100svh;
+  min-height:600px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,#18202a 0%,#080a0d 42%,#030405 100%);
+}
+
+#scene{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.topbar{
+  position:absolute;
+  z-index:10;
+  top:24px;
+  left:28px;
+  right:28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  pointer-events:none;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.logo{
+  object-fit:cover;
+  object-position:center;
+  overflow:hidden;
+  width:48px;
+  height:48px;
+  border:2px solid rgba(255,255,255,.75);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:700;
+}
+
+.brandText{
+  font-size:12px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+}
+
+.badge{
+  padding:9px 14px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:20px;
+  background:rgba(10,12,16,.45);
+  backdrop-filter:blur(12px);
+  font-size:9px;
+  letter-spacing:2px;
+  color:#9ea7b1;
+}
+
+.controls{
+  position:absolute;
+  z-index:20;
+  right:28px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+
+.ctrl{
+  width:125px;
+  padding:13px 12px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:8px;
+  color:#cfd5db;
+  background:rgba(8,10,13,.58);
+  backdrop-filter:blur(12px);
+  cursor:pointer;
+  font-size:10px;
+  font-weight:bold;
+  letter-spacing:2px;
+  transition:.25s;
+}
+
+.ctrl:hover,
+.ctrl.active{
+  background:#000;
+  color:#08090b;
+  border-color:#fff;
+  transform:translateX(-4px);
+}
+
+.loading{
+  position:absolute;
+  z-index:30;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background:#050608;
+  transition:opacity .6s;
+}
+
+.loading.hide{
+  opacity:0;
+  pointer-events:none;
+}
+
+.loadingBox{
+  width:min(320px,80vw);
+  text-align:center;
+}
+
+.loadingTitle{
+  font-size:11px;
+  letter-spacing:4px;
+  margin-bottom:18px;
+}
+
+.progress{
+  height:2px;
+  background:#20242a;
+}
+
+.progressBar{
+  width:0%;
+  height:100%;
+  background:#fff;
+  transition:width .2s;
+}
+
+.loadingText{
+  margin-top:12px;
+  font-size:9px;
+  letter-spacing:2px;
+  color:#6f7780;
+}
+
+.scrollHint{
+  position:absolute;
+  z-index:10;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:9px;
+  letter-spacing:4px;
+  color:#777f88;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:.35}
+  50%{opacity:1}
+}
+
+#engine{
+  position:relative;
+  min-height:100vh;
+  padding:110px 5vw 120px;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
+    #07090c;
+  background-size:55px 55px;
+}
+
+.sectionHead{
+  max-width:1100px;
+  margin:0 auto 55px;
+}
+
+.eyebrow{
+  color:#77818c;
+  font-size:10px;
+  letter-spacing:4px;
+  margin-bottom:15px;
+}
+
+.sectionTitle{
+  font-size:clamp(34px,6vw,72px);
+  line-height:.95;
+  letter-spacing:-3px;
+}
+
+.sectionSub{
+  max-width:650px;
+  margin-top:20px;
+  color:#737c86;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.engineLayout{
+  max-width:1250px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:minmax(0,1.6fr) minmax(280px,.7fr);
+  gap:30px;
+}
+
+.diagramCard,
+.infoCard,
+.performance{
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(12,15,19,.78);
+  backdrop-filter:blur(14px);
+  border-radius:16px;
+}
+
+.diagramCard{
+  min-height:620px;
+  padding:30px;
+  position:relative;
+  overflow:hidden;
+}
+
+.diagramTitle{
+  position:absolute;
+  top:25px;
+  left:30px;
+  font-size:10px;
+  letter-spacing:3px;
+  color:#737d87;
+}
+
+.engineSvg{
+  width:100%;
+  height:570px;
+  margin-top:20px;
+}
+
+.part{
+  cursor:pointer;
+}
+
+.part rect,
+.part circle,
+.part path{
+  fill:#12171d;
+  stroke:#67727d;
+  stroke-width:2;
+  transition:.2s;
+}
+
+.part:hover rect,
+.part:hover circle,
+.part:hover path,
+.part.selected rect,
+.part.selected circle,
+.part.selected path{
+  fill:#202832;
+  stroke:#fff;
+}
+
+.part text{
+  fill:#9ca6b0;
+  font-size:11px;
+  letter-spacing:1px;
+  pointer-events:none;
+}
+
+.connector{
+  stroke:#404951;
+  stroke-width:1;
+  stroke-dasharray:5 5;
+  fill:none;
+}
+
+.infoCard{
+  padding:30px;
+  min-height:350px;
+  position:sticky;
+  top:30px;
+}
+
+.infoTag{
+  color:#737e88;
+  font-size:9px;
+  letter-spacing:3px;
+}
+
+.infoName{
+  margin-top:12px;
+  font-size:30px;
+}
+
+.infoDescription{
+  margin-top:18px;
+  color:#818b95;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.specs{
+  margin-top:25px;
+  display:grid;
+  gap:10px;
+}
+
+.spec{
+  display:flex;
+  justify-content:space-between;
+  padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:11px;
+}
+
+.spec span:first-child{
+  color:#69737d;
+}
+
+.spec span:last-child{
+  color:#dce1e5;
+}
+
+@media(max-width:850px){
+
+  .topbar{
+    top:16px;
+    left:16px;
+    right:16px;
+  }
+
+  .brandText{display:none}
+
+  .badge{
+    font-size:8px;
+  }
+
+  .controls{
+    right:12px;
+    top:auto;
+    bottom:55px;
+    transform:none;
+    display:grid;
+    grid-template-columns:repeat(2,92px);
+    gap:6px;
+  }
+
+  .ctrl{
+    width:92px;
+    padding:10px 5px;
+    font-size:8px;
+  }
+
+  .ctrl:hover,.ctrl.active{
+    transform:none;
+  }
+
+  #engine{
+    padding:75px 14px 80px;
+  }
+
+  .sectionHead{
+    margin-bottom:30px;
+  }
+
+  .sectionTitle{
+    letter-spacing:-2px;
+  }
+
+  .engineLayout{
+    grid-template-columns:1fr;
+  }
+
+  .diagramCard{
+    min-height:470px;
+    padding:15px;
+  }
+
+  .engineSvg{
+    height:430px;
+    margin-top:25px;
+  }
+
+  .infoCard{
+    position:relative;
+    top:auto;
+  }
+
+  .metrics{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .performance{
+    padding:20px;
+  }
+
+  .metric{
+    padding:18px;
+  }
+
+  .metricValue{
+    font-size:23px;
+  }
+}
+
+@media(max-width:480px){
+
+  .logo{
+    width:40px;
+    height:40px;
+  }
+
+  .controls{
+    grid-template-columns:repeat(2,88px);
+  }
+
+  .ctrl{
+    width:88px;
+  }
+
+  .diagramCard{
+    min-height:390px;
+  }
+
+  .engineSvg{
+    height:350px;
+  }
+
+  .infoName{
+    font-size:25px;
+  }
+}
+
+/* ===== LUXURY EXPERIENCE ===== */
+
+html{
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  overflow-y:auto !important;
+}
+
+body{
+  margin:0;
+  overflow-x:hidden;
+  overflow-y:auto !important;
+  background:
+    radial-gradient(
+      circle at 50% 8%,
+      rgba(35,42,52,.95) 0%,
+      rgba(12,14,18,.98) 34%,
+      #050608 72%,
+      #020304 100%
+    );
+  color:#f5f5f5;
+}
+
+#hero{
+  position:relative;
+  min-height:100vh;
+  height:100vh;
+  overflow:hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 42%,
+      rgba(65,72,82,.28),
+      transparent 48%
+    ),
+    linear-gradient(
+      180deg,
+      #101318 0%,
+      #07090c 55%,
+      #020304 100%
+    );
+}
+
+#hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      0deg,
+      rgba(255,255,255,.018) 1px,
+      transparent 1px
+    );
+  background-size:80px 80px;
+  mask-image:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.65),
+    transparent 85%
+  );
+}
+
+#hero::after{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  bottom:4%;
+  height:20%;
+  pointer-events:none;
+  background:radial-gradient(
+    ellipse,
+    rgba(255,255,255,.10),
+    transparent 68%
+  );
+  filter:blur(30px);
+}
+
+#engine{
+  position:relative;
+  min-height:100vh;
+  padding:110px 6vw;
+  box-sizing:border-box;
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(50,60,72,.22),
+      transparent 35%
+    ),
+    linear-gradient(
+      180deg,
+      #07090c 0%,
+      #0b0e12 50%,
+      #030405 100%
+    );
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+#engine::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.28;
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.025) 1px,
+      transparent 1px
+    );
+  background-size:50px 50px;
+}
+
+.ctrl{
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  background:rgba(12,14,18,.58);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  transition:
+    transform .35s ease,
+    background .35s ease,
+    border-color .35s ease,
+    box-shadow .35s ease;
+}
+
+.ctrl:hover{
+  transform:translateX(-4px);
+  background:rgba(255,255,255,.10);
+  border-color:rgba(255,255,255,.28);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.5),
+    0 0 25px rgba(255,255,255,.05);
+}
+
+.ctrl.active{
+  background:rgba(255,255,255,.13);
+  border-color:rgba(255,255,255,.42);
+  box-shadow:
+    0 0 30px rgba(255,255,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+#loading{
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+section{
+  scroll-margin-top:30px;
+}
+
+@media(max-width:700px){
+  #engine{
+    padding:80px 5vw;
+  }
+
+  #hero{
+    min-height:100svh;
+    height:100svh;
+  }
+}
+
+
+/* BMW BRAND PALETTE */
+
+:root{
+  --bmw-blue:#0066b1;
+  --bmw-light-blue:#6caed6;
+  --bmw-white:#ffffff;
+  --bmw-black:#050505;
+}
+
+.topbar{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.88),
+      rgba(0,0,0,.35),
+      transparent
+    ) !important;
+}
+
+.ctrl.active{
+  border-color:var(--bmw-blue) !important;
+  box-shadow:
+    0 0 22px rgba(0,102,177,.25),
+    inset 0 0 18px rgba(0,102,177,.08);
+}
+
+.ctrl:hover{
+  border-color:rgba(0,102,177,.7) !important;
+}
+
+@media(max-width:600px){
+}
+
+</style>
+<style>
+
+/* ===== PREMIUM BMW 3D PRESENTATION ===== */
+
+#hero{
+  position:relative;
+  overflow:hidden;
+}
+
+/* subtle BMW blue atmosphere behind vehicle */
+#hero::before{
+  content:"";
+  position:absolute;
+  width:70vw;
+  height:55vh;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(
+    ellipse,
+    rgba(0,102,177,.20) 0%,
+    rgba(0,102,177,.08) 32%,
+    rgba(0,102,177,.025) 52%,
+    transparent 72%
+  );
+  pointer-events:none;
+  z-index:0;
+}
+
+/* keep 3D scene above glow */
+#hero canvas{
+  position:relative;
+  z-index:1;
+}
+
+/* premium floor shadow */
+#hero canvas{
+  filter:drop-shadow(
+    0 28px 24px rgba(0,0,0,.55)
+  );
+}
+
+</style>
+<style>
+
+/* ===== PREMIUM AUTOMOTIVE HERO ===== */
+
+#hero{
+  background:#050608 !important;
+  position:relative;
+  overflow:hidden;
+}
+
+/* cinematic blue atmosphere */
+#hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      ellipse 55% 45% at 50% 52%,
+      rgba(0,102,177,.22),
+      rgba(0,102,177,.07) 42%,
+      transparent 72%
+    );
+  z-index:0;
+}
+
+/* subtle light sweep */
+#hero::after{
+  content:"";
+  position:absolute;
+  width:70%;
+  height:1px;
+  left:15%;
+  bottom:14%;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,102,177,.65),
+    transparent
+  );
+  box-shadow:0 0 35px rgba(0,102,177,.35);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* keep interface above atmosphere */
+#hero > *{
+  position:relative;
+  z-index:2;
+}
+
+/* premium control buttons */
+.ctrl{
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  background:rgba(5,8,12,.58) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.28),
+    inset 0 1px rgba(255,255,255,.05);
+  transition:
+    transform .3s ease,
+    background .3s ease,
+    border-color .3s ease,
+    box-shadow .3s ease;
+}
+
+.ctrl:hover{
+  transform:translateX(-4px);
+  border-color:rgba(0,102,177,.75) !important;
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.4),
+    0 0 20px rgba(0,102,177,.15);
+}
+
+.ctrl.active{
+  background:#0066b1 !important;
+  border-color:#1688d0 !important;
+  box-shadow:
+    0 8px 30px rgba(0,102,177,.35),
+    0 0 25px rgba(0,102,177,.18);
+}
+
+</style>
+<style>
+
+/* ===== COMPACT 3D HERO / NORMAL PAGE SCROLL ===== */
+
+#hero{
+  height:88vh !important;
+  min-height:680px !important;
+  max-height:900px !important;
+}
+
+#hero canvas{
+  touch-action:none;
+}
+
+html,
+body{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+
+/* allow the page itself to receive vertical touch scrolling */
+#hero{
+  touch-action:pan-y;
+}
+
+@media(max-width:700px){
+  #hero{
+    height:82vh !important;
+    min-height:600px !important;
+    max-height:800px !important;
+  }
+}
+
+</style>
+
+<style id="bmw-real-scroll-css">
+
+#bmw-real-scroll{
+  position:relative !important;
+  height:500vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:#050608 !important;
+  color:#fff !important;
+  overflow:visible !important;
+}
+
+#bmw-real-scroll .bmw-real-stage{
+  position:sticky !important;
+  top:0 !important;
+  height:100vh !important;
+  min-height:600px !important;
+  width:100% !important;
+  overflow:hidden !important;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 58%,
+      rgba(0,95,165,.16) 0%,
+      rgba(0,95,165,.045) 30%,
+      transparent 65%
+    ),
+    #050608 !important;
+
+  z-index:50 !important;
+}
+
+#bmw-real-stage::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 28%,
+      rgba(0,0,0,.20) 65%,
+      rgba(0,0,0,.88) 100%
+    );
+  z-index:4;
+}
+
+#bmw-real-scroll .bmw-real-topline{
+  position:absolute;
+  top:28px;
+  left:34px;
+  right:34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:20;
+  font-size:10px;
+  letter-spacing:.28em;
+  color:rgba(255,255,255,.58);
+}
+
+#bmw-real-scroll .bmw-real-count{
+  color:rgba(255,255,255,.32);
+}
+
+#bmw-real-scroll .bmw-real-copy{
+  position:absolute;
+  left:7vw;
+  top:50%;
+  width:min(470px,72vw);
+  z-index:15;
+
+  opacity:0;
+  transform:translate3d(-30px,-50%,0);
+
+  pointer-events:none;
+
+  transition:
+    opacity .18s linear,
+    transform .18s linear;
+}
+
+#bmw-real-scroll .bmw-real-copy small{
+  display:block;
+  margin-bottom:18px;
+  font-size:10px;
+  letter-spacing:.34em;
+  color:#5fa9d6;
+}
+
+#bmw-real-scroll .bmw-real-copy h2{
+  margin:0;
+  font-size:clamp(45px,7vw,100px);
+  line-height:.87;
+  letter-spacing:-.055em;
+  font-weight:200;
+  color:#fff !important;
+}
+
+#bmw-real-scroll .bmw-real-copy h2 b{
+  font-weight:800;
+  color:#fff !important;
+}
+
+#bmw-real-scroll .bmw-real-copy p{
+  margin-top:25px;
+  max-width:350px;
+  font-size:13px;
+  line-height:1.7;
+  letter-spacing:.05em;
+  color:rgba(255,255,255,.52) !important;
+}
+
+#bmw-real-scroll .bmw-real-line{
+  position:absolute;
+  left:7vw;
+  top:calc(50% + 150px);
+  width:130px;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    #1679b8,
+    transparent
+  );
+  z-index:15;
+  opacity:.65;
+}
+
+#bmw-real-scroll .bmw-real-scroll{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  z-index:20;
+  font-size:8px;
+  letter-spacing:.35em;
+  color:rgba(255,255,255,.38);
+}
+
+#bmw-real-scroll .bmw-real-scroll i{
+  display:block;
+  width:1px;
+  height:34px;
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,.7),
+    transparent
+  );
+}
+
+#bmw-real-scroll .bmw-real-track{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+#bmw-real-scroll .bmw-real-track > div{
+  height:20%;
+}
+
+@media(max-width:700px){
+
+  #bmw-real-scroll{
+    height:500vh !important;
+  }
+
+  #bmw-real-scroll .bmw-real-topline{
+    left:18px;
+    right:18px;
+    top:20px;
+  }
+
+  #bmw-real-scroll .bmw-real-copy{
+    left:7vw;
+    top:67%;
+    width:82vw;
+  }
+
+  #bmw-real-scroll .bmw-real-copy h2{
+    font-size:clamp(40px,13vw,68px);
+  }
+
+  #bmw-real-scroll .bmw-real-copy p{
+    font-size:11px;
+    max-width:290px;
+  }
+
+  #bmw-real-scroll .bmw-real-line{
+    left:7vw;
+    top:calc(67% + 125px);
+    width:90px;
+  }
+}
+
+</style>
+
+
+<style id="vigil-techdata-style">
+.vigilTechNote{
+  position:relative;
+  margin-top:38px;
+  padding:18px 0 8px;
+  border-top:1px solid rgba(255,255,255,.10);
+  color:#747c86;
+  font-family:Arial,Helvetica,sans-serif;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  overflow:hidden;
+}
+
+.vigilTechIndex{
+  font-size:8px;
+  color:#9aa3ad;
+  letter-spacing:.30em;
+  margin-bottom:12px;
+}
+
+.vigilTechLine{
+  width:34px;
+  height:1px;
+  background:rgba(255,255,255,.55);
+  margin-bottom:13px;
+  transform-origin:left;
+  animation:vigilTechLine 3.5s ease-in-out infinite;
+}
+
+.vigilTechText{
+  max-width:760px;
+  font-size:8px;
+  line-height:2;
+  opacity:.72;
+}
+
+.vigilTechNote:after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-30%;
+  width:18%;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.75),
+    transparent
+  );
+  animation:vigilTechScan 5s ease-in-out infinite;
+}
+
+@keyframes vigilTechLine{
+  0%,100%{transform:scaleX(.35);opacity:.35}
+  50%{transform:scaleX(1);opacity:1}
+}
+
+@keyframes vigilTechScan{
+  0%{left:-30%;opacity:0}
+  15%{opacity:1}
+  55%{left:110%;opacity:0}
+  100%{left:110%;opacity:0}
+}
+
+@media(max-width:700px){
+  .vigilTechNote{
+    margin-top:28px;
+    padding-top:15px;
+  }
+
+  .vigilTechText{
+    font-size:7px;
+    line-height:2.1;
+    letter-spacing:.12em;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .vigilTechLine,
+  .vigilTechNote:after{
+    animation:none;
+  }
+}
+</style>
+
+
+<style id="vigil-techdata-reveal">
+.vigilTechNote{
+  opacity:0;
+  transform:translateY(28px);
+  transition:
+    opacity 1s cubic-bezier(.22,1,.36,1),
+    transform 1.1s cubic-bezier(.22,1,.36,1);
+}
+
+.vigilTechNote.vigil-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.vigilTechIndex{
+  opacity:0;
+  transform:translateX(-22px);
+  transition:
+    opacity .8s ease .15s,
+    transform .9s cubic-bezier(.22,1,.36,1) .15s;
+}
+
+.vigilTechText{
+  opacity:0;
+  transform:translateY(16px);
+  transition:
+    opacity 1s ease .35s,
+    transform 1s cubic-bezier(.22,1,.36,1) .35s;
+}
+
+.vigilTechNote.vigil-visible .vigilTechIndex,
+.vigilTechNote.vigil-visible .vigilTechText{
+  opacity:1;
+  transform:translate(0);
+}
+
+.vigilTechLine{
+  transform:scaleX(0);
+  transform-origin:left center;
+  transition:
+    transform 1s cubic-bezier(.22,1,.36,1) .25s;
+}
+
+.vigilTechNote.vigil-visible .vigilTechLine{
+  transform:scaleX(1);
+}
+
+@media(prefers-reduced-motion:reduce){
+  .vigilTechNote,
+  .vigilTechIndex,
+  .vigilTechText,
+  .vigilTechLine{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+}
+</style>
+
+
+<style id="faraz-ending-style">
+
+#farazEnding{
+  position:relative;
+  min-height:55vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.farazEndingInner{
+  position:relative;
+  z-index:2;
+}
+
+.farazEndingIndex{
+  color:#6f7780;
+  font:8px Arial,sans-serif;
+  letter-spacing:.42em;
+  margin-bottom:18px;
+  opacity:.8;
+}
+
+.farazEndingLine{
+  width:42px;
+  height:1px;
+  margin:0 auto 22px;
+  background:rgba(255,255,255,.55);
+}
+
+.farazEndingTitle{
+  margin:0;
+  color:#fff;
+  font:700 clamp(32px,6vw,72px)/.95 Arial,sans-serif;
+  letter-spacing:-.055em;
+}
+
+.farazEndingCredit{
+  margin-top:18px;
+  color:#858d97;
+  font:9px Arial,sans-serif;
+  letter-spacing:.34em;
+  text-transform:uppercase;
+}
+
+.farazEndingSub{
+  margin-top:30px;
+  color:#555e68;
+  font:7px Arial,sans-serif;
+  letter-spacing:.25em;
+}
+
+.farazEndingGlow{
+  position:absolute;
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle,
+    rgba(70,100,150,.12),
+    transparent 68%
+  );
+  filter:blur(25px);
+}
+
+@media(max-width:700px){
+  #farazEnding{
+    min-height:48vh;
+  }
+
+  .farazEndingTitle{
+    font-size:43px;
+  }
+
+  .farazEndingCredit{
+    font-size:8px;
+    letter-spacing:.27em;
+  }
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+<style id="bmw-mega-upgrade-css">
+/* ===== BMW MEGA CINEMATIC UPGRADE ===== */
+
+:root{
+  --bmw-white:#f4f6f8;
+  --bmw-muted:#8d959f;
+  --bmw-line:rgba(255,255,255,.12);
+  --bmw-blue:#4f8cff;
+  --bmw-bg:#030507;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(40,60,90,.14),transparent 35%),
+    var(--bmw-bg)!important;
+  color:var(--bmw-white);
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9997;
+  opacity:.045;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.7) 0px,
+      rgba(255,255,255,.7) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  mix-blend-mode:overlay;
+}
+
+#bmwMegaHUD{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9990;
+}
+
+.megaTop{
+  position:absolute;
+  top:28px;
+  left:32px;
+  right:32px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  font-family:Arial,sans-serif;
+  letter-spacing:.16em;
+}
+
+.megaBrand{
+  font-size:11px;
+  font-weight:700;
+}
+
+.megaBrand small{
+  display:block;
+  margin-top:7px;
+  color:var(--bmw-muted);
+  font-size:8px;
+  letter-spacing:.25em;
+}
+
+.megaStatus{
+  text-align:right;
+  font-size:9px;
+  color:#b8c0ca;
+}
+
+.megaStatus i{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#8fe0a0;
+  margin-right:7px;
+  box-shadow:0 0 12px rgba(143,224,160,.7);
+}
+
+.megaRail{
+  position:absolute;
+  right:30px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+  align-items:flex-end;
+}
+
+.megaRail button{
+  pointer-events:auto;
+  border:0;
+  background:none;
+  color:#59616b;
+  font:9px Arial,sans-serif;
+  letter-spacing:.14em;
+  cursor:pointer;
+  padding:6px;
+  transition:.3s;
+}
+
+.megaRail button.active,
+.megaRail button:hover{
+  color:#fff;
+}
+
+.megaRail button:before{
+  content:"";
+  display:inline-block;
+  width:22px;
+  height:1px;
+  margin-right:8px;
+  vertical-align:middle;
+  background:currentColor;
+  opacity:.65;
+}
+
+.megaBottom{
+  position:absolute;
+  bottom:25px;
+  left:32px;
+  right:32px;
+  display:flex;
+  justify-content:space-between;
+  font:8px Arial,sans-serif;
+  color:#626a74;
+  letter-spacing:.2em;
+}
+
+.megaScroll{
+  position:absolute;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  font:8px Arial,sans-serif;
+  letter-spacing:.25em;
+  color:#737b85;
+}
+
+.megaScroll:after{
+  content:"";
+  display:block;
+  width:1px;
+  height:35px;
+  margin:9px auto 0;
+  background:linear-gradient(#fff,transparent);
+  animation:megaLine 1.8s infinite;
+}
+
+@keyframes megaLine{
+  0%,100%{opacity:.25;transform:scaleY(.5);transform-origin:top}
+  50%{opacity:1;transform:scaleY(1);transform-origin:top}
+}
+
+#hero{
+  position:relative;
+  overflow:hidden;
+}
+
+#hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 35%,
+      rgba(0,0,0,.48) 100%
+    );
+  z-index:2;
+}
+
+#scene{
+  position:relative;
+  z-index:1;
+}
+
+.megaHeroTitle{
+  position:absolute;
+  left:7vw;
+  bottom:15vh;
+  z-index:4;
+  pointer-events:none;
+  font-family:Arial,sans-serif;
+}
+
+.megaKicker{
+  color:#8d98a5;
+  font-size:9px;
+  letter-spacing:.42em;
+  margin-bottom:14px;
+}
+
+.megaHeroTitle h1{
+  margin:0;
+  font-size:clamp(38px,7vw,100px);
+  line-height:.9;
+  letter-spacing:-.055em;
+  font-weight:700;
+}
+
+.megaHeroTitle p{
+  margin:18px 0 0;
+  max-width:420px;
+  color:#9ba4ae;
+  font-size:11px;
+  line-height:1.8;
+  letter-spacing:.08em;
+}
+
+.megaSpec{
+  position:absolute;
+  right:7vw;
+  bottom:15vh;
+  z-index:4;
+  text-align:right;
+  font-family:Arial,sans-serif;
+  pointer-events:none;
+}
+
+.megaSpec strong{
+  display:block;
+  font-size:28px;
+  letter-spacing:-.03em;
+}
+
+.megaSpec span{
+  display:block;
+  margin-top:5px;
+  color:#747d87;
+  font-size:8px;
+  letter-spacing:.25em;
+}
+
+.megaSectionLine{
+  height:1px;
+  width:100%;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.16),
+    transparent
+  );
+}
+
+#engine{
+  position:relative;
+}
+
+#engine:before,
+.bmw-info-section:before{
+  content:"";
+  display:block;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.13),
+    transparent
+  );
+  margin-bottom:50px;
+}
+
+.engineLayout,
+.bmw-info-inner{
+  position:relative;
+}
+
+.diagramCard,
+.infoCard,
+.performance{
+  border:1px solid var(--bmw-line)!important;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.012)
+    )!important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.035),
+    0 25px 80px rgba(0,0,0,.25);
+  backdrop-filter:blur(10px);
+}
+
+.performance{
+  position:relative;
+  overflow:hidden;
+}
+
+.performance:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:2px;
+  height:100%;
+  background:linear-gradient(
+    transparent,
+    var(--bmw-blue),
+    transparent
+  );
+  animation:performanceScan 3s infinite;
+}
+
+@keyframes performanceScan{
+  0%{transform:translateY(-100%)}
+  50%,100%{transform:translateY(100%)}
+}
+
+.metric{
+  transition:transform .35s ease,border-color .35s ease;
+}
+
+.metric:hover{
+  transform:translateY(-5px);
+}
+
+.metricValue{
+  letter-spacing:-.04em;
+}
+
+.bmw-info-section{
+  position:relative;
+  overflow:hidden;
+}
+
+.bmw-info-section:after{
+  content:"BMW";
+  position:absolute;
+  right:-4vw;
+  bottom:-6vw;
+  font:bold 20vw Arial,sans-serif;
+  letter-spacing:-.08em;
+  color:rgba(255,255,255,.018);
+  pointer-events:none;
+}
+
+.bmw-info-grid > *{
+  transition:transform .35s ease,border-color .35s ease;
+}
+
+.bmw-info-grid > *:hover{
+  transform:translateY(-6px);
+}
+
+#megaFinal{
+  min-height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+
+#megaFinal:before{
+  content:"";
+  position:absolute;
+  width:55vw;
+  height:55vw;
+  max-width:650px;
+  max-height:650px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle,
+    rgba(65,105,170,.13),
+    transparent 65%
+  );
+  filter:blur(20px);
+}
+
+.megaFinalInner{
+  position:relative;
+  z-index:2;
+}
+
+.megaFinalIndex{
+  color:#707983;
+  font:9px Arial,sans-serif;
+  letter-spacing:.45em;
+  margin-bottom:20px;
+}
+
+.megaFinalInner h2{
+  margin:0;
+  font:700 clamp(38px,7vw,92px)/.9 Arial,sans-serif;
+  letter-spacing:-.065em;
+}
+
+.megaFinalInner p{
+  max-width:500px;
+  margin:25px auto 0;
+  color:#858e98;
+  font:11px/1.9 Arial,sans-serif;
+  letter-spacing:.08em;
+}
+
+.megaFinalButton{
+  pointer-events:auto;
+  margin-top:30px;
+  padding:13px 24px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.035);
+  color:#fff;
+  cursor:pointer;
+  font:9px Arial,sans-serif;
+  letter-spacing:.22em;
+  transition:.3s;
+}
+
+.megaFinalButton:hover{
+  background:#fff;
+  color:#050608;
+}
+
+@media(max-width:700px){
+  .megaTop{top:18px;left:18px;right:18px}
+  .megaRail{right:10px}
+  .megaHeroTitle{left:22px;bottom:13vh}
+  .megaHeroTitle h1{font-size:48px}
+  .megaHeroTitle p{max-width:270px;font-size:9px}
+  .megaSpec{right:22px;bottom:5vh}
+  .megaSpec strong{font-size:21px}
+  .megaBottom{left:18px;right:18px}
+  .megaScroll{display:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{
+    scroll-behavior:auto!important;
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
+
+<body>
+
+<section id="hero">
+
+  <div id="scene"></div>
+
+  <div class="topbar">
+
+
+
+    <div class="brand">
+      <img src="assets/bmw-logo-clean.jpg" alt="BMW" class="logo">
+      <div class="brandText">
+        Interactive Vehicle Experience
+      </div>
+    </div>
+
+    <div class="badge">
+      3D VEHICLE SIMULATOR
+    </div>
+
+  </div>
+
+  <div class="controls">
+
+    <button class="ctrl active" data-view="front">
+      FRONT
+    </button>
+
+    <button class="ctrl" data-view="side">
+      SIDE
+    </button>
+
+    <button class="ctrl" data-view="rear">
+      REAR
+    </button>
+
+    <button class="ctrl" data-view="interior">
+      INTERIOR
+    </button>
+
+    <button class="ctrl" data-view="cinematic">
+      CINEMATIC
+    </button>
+
+    <button class="ctrl" data-view="reset">
+      RESET
+    </button>
+
+  </div>
+
+  <div class="scrollHint">
+    SCROLL TO EXPLORE
+  </div>
+
+  <div class="loading" id="loading">
+
+    <div class="loadingBox">
+
+      <div class="loadingTitle">
+        LOADING VEHICLE
+      </div>
+
+      <div class="progress">
+        <div class="progressBar" id="progressBar"></div>
+      </div>
+
+      <div class="loadingText" id="loadingText">
+        INITIALIZING 3D SYSTEM
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section id="engine">
+
+  <div class="sectionHead">
+
+    <div class="eyebrow">
+      02 / POWERTRAIN
+    </div>
+
+    <h1 class="sectionTitle">
+      ENGINE<br>MODULE
+    </h1>
+
+    <p class="sectionSub">
+      Explore the vehicle's powertrain architecture.
+      Select a component in the technical diagram
+      to inspect its role and engineering data.
+    </p>
+
+  </div>
+
+  <div class="engineLayout">
+
+    <div class="diagramCard">
+
+      <div class="diagramTitle">
+        INTERACTIVE POWERTRAIN SCHEMATIC
+      </div>
+
+      <svg class="engineSvg" viewBox="0 0 900 560">
+
+        <path class="connector" d="M180 140 L300 230"/>
+        <path class="connector" d="M720 140 L600 230"/>
+        <path class="connector" d="M120 300 L270 300"/>
+        <path class="connector" d="M780 300 L630 300"/>
+        <path class="connector" d="M220 450 L330 360"/>
+        <path class="connector" d="M680 450 L570 360"/>
+
+        <g class="part selected" data-part="engine">
+          <rect x="300" y="190" width="300" height="190" rx="18"/>
+          <text x="450" y="285" text-anchor="middle">
+            ENGINE BLOCK
+          </text>
+          <text x="450" y="307" text-anchor="middle" font-size="8">
+            CORE POWER UNIT
+          </text>
+        </g>
+
+        <g class="part" data-part="turbo">
+          <circle cx="150" cy="115" r="58"/>
+          <text x="150" y="111" text-anchor="middle">
+            TURBO
+          </text>
+          <text x="150" y="130" text-anchor="middle" font-size="8">
+            BOOST
+          </text>
+        </g>
+
+        <g class="part" data-part="intake">
+          <path d="M665 75 Q760 75 790 145 L740 175 Q700 130 650 130 Z"/>
+          <text x="730" y="120" text-anchor="middle">
+            INTAKE
+          </text>
+        </g>
+
+        <g class="part" data-part="exhaust">
+          <path d="M100 275 Q170 240 250 270 L250 330 Q170 355 100 325 Z"/>
+          <text x="175" y="302" text-anchor="middle">
+            EXHAUST
+          </text>
+        </g>
+
+        <g class="part" data-part="cooling">
+          <rect x="690" y="250" width="130" height="100" rx="10"/>
+          <text x="755" y="290" text-anchor="middle">
+            COOLING
+          </text>
+          <text x="755" y="309" text-anchor="middle" font-size="8">
+            RADIATOR
+          </text>
+        </g>
+
+        <g class="part" data-part="transmission">
+          <path d="M335 405 L565 405 L620 470 L280 470 Z"/>
+          <text x="450" y="440" text-anchor="middle">
+            TRANSMISSION
+          </text>
+        </g>
+
+        <g class="part" data-part="battery">
+          <rect x="80" y="410" width="130" height="70" rx="10"/>
+          <text x="145" y="440" text-anchor="middle">
+            BATTERY
+          </text>
+          <text x="145" y="458" text-anchor="middle" font-size="8">
+            ELECTRICAL
+          </text>
+        </g>
+
+        <g class="part" data-part="fuel">
+          <rect x="690" y="410" width="130" height="70" rx="10"/>
+          <text x="755" y="440" text-anchor="middle">
+            FUEL SYSTEM
+          </text>
+          <text x="755" y="458" text-anchor="middle" font-size="8">
+            DELIVERY
+          </text>
+        </g>
+
+      </svg>
+
+    </div>
+
+
+    <div class="infoCard">
+
+      <div class="infoTag">
+        SELECTED COMPONENT
+      </div>
+
+      <div class="infoName" id="infoName">
+        ENGINE BLOCK
+      </div>
+
+      <p class="infoDescription" id="infoDescription">
+        Central mechanical assembly responsible for
+        converting combustion energy into rotational power.
+      </p>
+
+      <div class="specs">
+
+        <div class="spec">
+          <span>FUNCTION</span>
+          <span id="spec1">POWER GENERATION</span>
+        </div>
+
+        <div class="spec">
+          <span>SYSTEM</span>
+          <span id="spec2">POWERTRAIN</span>
+        </div>
+
+        <div class="spec">
+          <span>STATUS</span>
+          <span id="spec3">ACTIVE</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  
+<!-- S58 INSPIRED 3D ENGINE MODULE -->
+
+
+
+
+<div class="performance">
+
+    <div class="performanceHead">
+
+      <div class="performanceTitle">
+        PERFORMANCE PROFILE
+      </div>
+
+      <div class="verify">
+        DEMO DATA — VERIFY FINAL CONFIGURATION
+      </div>
+
+    </div>
+
+    <div class="metrics">
+
+      <div class="metric">
+        <div class="metricValue">503 HP</div>
+        <div class="metricLabel">MAX POWER</div>
+      </div>
+
+      <div class="metric">
+        <div class="metricValue">650 Nm</div>
+        <div class="metricLabel">MAX TORQUE</div>
+      </div>
+
+      <div class="metric">
+        <div class="metricValue">3.9 s</div>
+        <div class="metricLabel">0–100 KM/H</div>
+      </div>
+
+      <div class="metric">
+        <div class="metricValue">ICE</div>
+        <div class="metricLabel">ENGINE PROFILE</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="bottomNote vigilTechNote">
+  <div class="vigilTechIndex">03 / B — TECHNICAL NOTE</div>
+  <div class="vigilTechLine"></div>
+  <div class="vigilTechText">
+    TECHNICAL DATA SHOWN IN THIS DEMO IS PRESENTED FOR THE
+    INTERACTIVE CONCEPT. FINAL VEHICLE, ENGINE, MARKET AND
+    MODEL-YEAR SPECIFICATIONS SHOULD BE VERIFIED BEFORE
+    COMMERCIAL OR CLIENT PRESENTATION.
+  </div>
+</div>
+
+</section>
+
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+
+import {GLTFLoader} from
+'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
+
+import {OrbitControls} from
+'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+
+
+const scene = new THREE.Scene();
+
+scene.background =
+  new THREE.Color(0x050608);
+
+
+const camera =
+  new THREE.PerspectiveCamera(
+    42,
+    window.innerWidth/window.innerHeight,
+    .01,
+    1000
+  );
+
+
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true,
+    alpha:true,
+    powerPreference:'high-performance'
+  });
+
+
+renderer.setClearColor(0xffffff, 1);
+  renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio || 1,1.5)
+);
+
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+renderer.outputColorSpace =
+  THREE.SRGBColorSpace;
+
+
+document
+  .getElementById('scene')
+  .appendChild(renderer.domElement);
+
+
+const controls =
+  new OrbitControls(
+    camera,
+    renderer.domElement
+  );
+
+controls.enableDamping=true;
+controls.dampingFactor=.07;
+controls.enablePan=false;
+controls.minPolarAngle=.55;
+controls.maxPolarAngle=1.55;
+
+
+const ambient =
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x171b20,
+    2.2
+  );
+
+scene.add(ambient);
+
+
+const keyLight =
+  new THREE.DirectionalLight(
+    0xffffff,
+    4
+  );
+
+keyLight.position.set(8,12,10);
+
+scene.add(keyLight);
+
+
+const rimLight =
+  new THREE.DirectionalLight(
+    0x8aa0b8,
+    3
+  );
+
+rimLight.position.set(-8,6,-10);
+
+scene.add(rimLight);
+
+
+const floor =
+  new THREE.Mesh(
+    new THREE.CircleGeometry(20,80),
+    new THREE.MeshStandardMaterial({
+      color:0x07090b,
+      roughness:.82,
+      metalness:.15
+    })
+  );
+
+floor.rotation.x=-Math.PI/2;
+floor.position.y=-1.25;
+
+scene.add(floor);
+
+
+let car=null;
+
+let carCenter =
+  new THREE.Vector3();
+
+let carRadius=5;
+
+
+function responsiveCamera(){
+
+  if(!car)return;
+
+  const portrait =
+    window.innerHeight >
+    window.innerWidth;
+
+  const distance =
+    carRadius *
+    (portrait ? 2.8 : 2.05);
+
+  camera.position.set(
+    distance*.72,
+    distance*.28,
+    distance
+  );
+
+  controls.target.copy(carCenter);
+
+  controls.minDistance =
+    carRadius*.8;
+
+  controls.maxDistance =
+    carRadius*5;
+
+  camera.updateProjectionMatrix();
+
+}
+
+
+const loader =
+  new GLTFLoader();
+
+
+loader.load(
+
+  'models/car.glb',
+
+  function(gltf){
+
+    car=gltf.scene;
+
+    scene.add(car);
+
+
+    car.traverse(function(obj){
+
+      if(obj.isMesh){
+
+        obj.castShadow=true;
+        obj.receiveShadow=true;
+
+        if(obj.material){
+          obj.material.envMapIntensity=1.2;
+        }
+
+      }
+
+    });
+
+
+    const box =
+      new THREE.Box3()
+      .setFromObject(car);
+
+    const center =
+      box.getCenter(
+        new THREE.Vector3()
+      );
+
+    const size =
+      box.getSize(
+        new THREE.Vector3()
+      );
+
+    carRadius =
+      Math.max(
+        size.x,
+        size.y,
+        size.z
+      )/2;
+
+
+    car.position.sub(center);
+
+    car.position.y=.9;
+
+    carCenter.set(0,0,0);
+
+    responsiveCamera();
+
+
+    document
+      .getElementById('progressBar')
+      .style.width='100%';
+
+    document
+      .getElementById('loadingText')
+      .textContent='VEHICLE READY';
+
+
+    setTimeout(function(){
+
+      document
+        .getElementById('loading')
+        .classList.add('hide');
+
+    },500);
+
+  },
+
+
+  function(xhr){
+
+    if(xhr.total){
+
+      const percent =
+        xhr.loaded/xhr.total*100;
+
+      document
+        .getElementById('progressBar')
+        .style.width=
+        percent+'%';
+
+      document
+        .getElementById('loadingText')
+        .textContent=
+        'LOADING '+
+        Math.round(percent)+
+        '%';
+
+    }
+
+  },
+
+
+  function(error){
+
+    console.error(error);
+
+    document
+      .getElementById('loadingText')
+      .textContent=
+      'MODEL LOAD ERROR';
+
+  }
+
+);
+
+
+function setView(type){
+
+  if(!car) return;
+
+  document
+    .querySelectorAll('.ctrl')
+    .forEach(b => b.classList.remove('active'));
+
+  const button = document.querySelector(
+    `[data-view="${type}"]`
+  );
+
+  if(button)
+    button.classList.add('active');
+
+  const d = carRadius * 2.4;
+
+  controls.autoRotate = false;
+
+  let targetPosition;
+
+  if(type === 'front'){
+    targetPosition = new THREE.Vector3(
+      d*.72,
+      d*.30,
+      d
+    );
+  }
+
+  else if(type === 'side'){
+    targetPosition = new THREE.Vector3(
+      d*1.35,
+      d*.22,
+      0
+    );
+  }
+
+  else if(type === 'rear'){
+    targetPosition = new THREE.Vector3(
+      -d*.72,
+      d*.30,
+      -d
+    );
+  }
+
+  else if(type === 'interior'){
+    targetPosition = new THREE.Vector3(
+      d*.25,
+      d*.15,
+      d*.25
+    );
+  }
+
+  else if(type === 'cinematic'){
+    targetPosition = new THREE.Vector3(
+      d*1.15,
+      d*.65,
+      d*1.15
+    );
+
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 1.2;
+  }
+
+  else if(type === 'reset'){
+    responsiveCamera();
+    controls.target.copy(carCenter);
+    controls.update();
+    return;
+  }
+
+  const startPosition = camera.position.clone();
+  const startTime = performance.now();
+  const duration = 1400;
+
+  function smoothCamera(now){
+
+    const progress = Math.min(
+      (now - startTime) / duration,
+      1
+    );
+
+    const eased =
+      progress < .5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+    camera.position.lerpVectors(
+      startPosition,
+      targetPosition,
+      eased
+    );
+
+    controls.target.copy(carCenter);
+    controls.update();
+
+    if(progress < 1){
+      requestAnimationFrame(smoothCamera);
+    }
+  }
+
+  requestAnimationFrame(smoothCamera);
+}
+
+document
+  .querySelectorAll('.ctrl')
+  .forEach(button=>{
+
+    button.addEventListener(
+      'click',
+      ()=>setView(button.dataset.view)
+    );
+
+  });
+
+
+window.addEventListener(
+  'resize',
+  function(){
+
+    camera.aspect =
+      window.innerWidth/
+      window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio||1,
+        1.5
+      )
+    );
+
+    responsiveCamera();
+
+  }
+);
+
+
+window.addEventListener(
+  'orientationchange',
+  function(){
+
+    setTimeout(
+      responsiveCamera,
+      300
+    );
+
+  }
+);
+
+
+/* =========================================================
+   BMW CINEMATIC SCROLL CAMERA
+   Existing model + existing Three.js scene.
+   Scroll drives the camera across the Hero.
+   ========================================================= */
+
+let scrollCameraEnabled = true;
+
+const scrollCamTarget = new THREE.Vector3();
+const scrollLookTarget = new THREE.Vector3();
+
+function updateScrollCamera(){
+
+  if(!car || !scrollCameraEnabled) return;
+
+  const hero = document.getElementById('hero');
+
+  if(!hero) return;
+
+  /*
+    Use the actual page position instead of relying on
+    hero height being larger than the viewport.
+
+    The camera begins moving as the user leaves the hero.
+  */
+
+  const rect = hero.getBoundingClientRect();
+
+  const heroHeight = Math.max(
+    hero.getBoundingClientRect().height,
+    window.innerHeight
+  );
+
+  const travel = Math.max(
+    heroHeight * 0.90,
+    window.innerHeight * 0.90
+  );
+
+  let progress = -rect.top / travel;
+
+  progress = Math.max(
+    0,
+    Math.min(1, progress)
+  );
+
+  const d = carRadius * 2.4;
+
+  let x;
+  let y;
+  let z;
+
+  /*
+    0.00 = front three-quarter
+    0.30 = front / side
+    0.55 = side
+    0.78 = rear three-quarter
+    1.00 = rear
+  */
+
+  if(progress < .30){
+
+    const t = progress / .30;
+
+    x = THREE.MathUtils.lerp(
+      d*.72,
+      d*1.35,
+      t
+    );
+
+    y = THREE.MathUtils.lerp(
+      d*.30,
+      d*.22,
+      t
+    );
+
+    z = THREE.MathUtils.lerp(
+      d,
+      0,
+      t
+    );
+
+  }else if(progress < .78){
+
+    const t = (progress-.30) / .48;
+
+    x = THREE.MathUtils.lerp(
+      d*1.35,
+      -d*.45,
+      t
+    );
+
+    y = THREE.MathUtils.lerp(
+      d*.22,
+      d*.28,
+      t
+    );
+
+    z = THREE.MathUtils.lerp(
+      0,
+      -d*.92,
+      t
+    );
+
+  }else{
+
+    const t = (progress-.78) / .22;
+
+    x = THREE.MathUtils.lerp(
+      -d*.45,
+      -d*.72,
+      t
+    );
+
+    y = THREE.MathUtils.lerp(
+      d*.28,
+      d*.30,
+      t
+    );
+
+    z = THREE.MathUtils.lerp(
+      -d*.92,
+      -d,
+      t
+    );
+
+  }
+
+  scrollCamTarget.set(x,y,z);
+
+  scrollLookTarget.set(
+    carCenter.x,
+    carCenter.y,
+    carCenter.z
+  );
+
+  /*
+    Smooth cinematic movement.
+  */
+
+  camera.position.lerp(
+    scrollCamTarget,
+    .075
+  );
+
+  controls.target.lerp(
+    scrollLookTarget,
+    .10
+  );
+
+  controls.autoRotate = false;
+
+  /*
+    Very subtle vehicle rotation.
+  */
+
+  const targetRotation =
+    THREE.MathUtils.lerp(
+      0,
+      Math.PI * .10,
+      progress
+    );
+
+  car.rotation.y +=
+    (targetRotation - car.rotation.y) * .035;
+
+}
+
+
+/*
+  Scroll listener.
+*/
+
+let scrollFrame = false;
+
+function requestScrollCamera(){
+
+  if(scrollFrame) return;
+
+  scrollFrame = true;
+
+  requestAnimationFrame(function(){
+
+    updateScrollCamera();
+
+    scrollFrame = false;
+
+  });
+
+}
+
+window.addEventListener(
+  'scroll',
+  requestScrollCamera,
+  {passive:true}
+);
+
+window.addEventListener(
+  'resize',
+  requestScrollCamera,
+  {passive:true}
+);
+
+window.addEventListener(
+  'orientationchange',
+  function(){
+
+    setTimeout(
+      requestScrollCamera,
+      350
+    );
+
+  }
+);
+
+
+/*
+  Keep the original responsive camera behavior,
+  then immediately synchronize the cinematic target.
+*/
+
+const originalResponsiveCamera =
+  responsiveCamera;
+
+responsiveCamera = function(){
+
+  originalResponsiveCamera();
+
+  if(car){
+
+    scrollCamTarget.copy(
+      camera.position
+    );
+
+    scrollLookTarget.set(
+      carCenter.x,
+      carCenter.y,
+      carCenter.z
+    );
+
+    requestScrollCamera();
+
+  }
+
+};
+
+
+/*
+  Start after the page is ready.
+*/
+
+window.addEventListener(
+  'load',
+  function(){
+
+    setTimeout(
+      requestScrollCamera,
+      250
+    );
+
+  }
+);
+
+
+/*
+  Main render loop.
+*/
+
+function animate(){
+
+  requestAnimationFrame(animate);
+
+  controls.update();
+
+  camera.lookAt(carCenter);
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+animate();
+
+
+</script>
+
+</section>
+
+
+
+
+
+<script>
+document.documentElement.style.overflowY = 'auto';
+document.body.style.overflowY = 'auto';
+document.body.style.overflowX = 'hidden';
+
+window.addEventListener('wheel', function(e){
+  if(e.deltaY !== 0){
+    window.scrollBy({
+      top:e.deltaY,
+      left:0,
+      behavior:'auto'
+    });
+  }
+},{passive:true});
+</script>
+
+
+<section class="bmw-info-section">
+  <div class="bmw-info-inner">
+
+    <div class="bmw-info-label">BMW GROUP</div>
+
+    <h2>THE FUTURE OF MOBILITY</h2>
+
+    <p>
+      BMW Group describes its direction around exciting products,
+      innovation and shaping the future of sustainable mobility.
+      Its corporate approach also emphasizes individual mobility
+      together with responsibility for the environment and society.
+    </p>
+
+    <div class="bmw-info-grid">
+
+      <div>
+        <strong>DESIGN</strong>
+        <p>BMW combines distinctive vehicle design with a clear focus on proportions, identity and modern visual character.</p>
+      </div>
+
+      <div>
+        <strong>TECHNOLOGY</strong>
+        <p>BMW develops digital technologies and connected vehicle experiences as part of its approach to future mobility.</p>
+      </div>
+
+      <div>
+        <strong>ELECTROMOBILITY</strong>
+        <p>BMW Group is developing electric mobility and technologies aimed at reducing emissions across its future vehicle portfolio.</p>
+      </div>
+
+    </div>
+
+    <div class="bmw-source-note">
+      INFORMATION SOURCE: BMW GROUP OFFICIAL MATERIAL
+    </div>
+
+  </div>
+</section>
+
+<style>
+
+.bmw-info-section{
+  position:relative;
+  padding:120px 7vw;
+  background:#050608;
+  color:#fff;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.bmw-info-inner{
+  max-width:1100px;
+  margin:auto;
+}
+
+.bmw-info-label{
+  color:#6caed6;
+  font-size:12px;
+  letter-spacing:4px;
+  margin-bottom:18px;
+}
+
+.bmw-info-section h2{
+  margin:0 0 24px;
+  font-size:clamp(38px,6vw,82px);
+  line-height:.95;
+  letter-spacing:-2px;
+}
+
+.bmw-info-section>div>p{
+  max-width:760px;
+  color:rgba(255,255,255,.68);
+  font-size:17px;
+  line-height:1.8;
+}
+
+.bmw-info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:55px;
+}
+
+.bmw-info-grid>div{
+  padding:28px;
+  min-height:190px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.025);
+}
+
+.bmw-info-grid span{
+  display:block;
+  color:#0066b1;
+  font-size:13px;
+  margin-bottom:30px;
+}
+
+.bmw-info-grid strong{
+  display:block;
+  font-size:18px;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.bmw-info-grid p{
+  color:rgba(255,255,255,.55);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.bmw-source-note{
+  margin-top:45px;
+  color:rgba(255,255,255,.35);
+  font-size:10px;
+  letter-spacing:2px;
+}
+
+@media(max-width:700px){
+  .bmw-info-section{
+    padding:80px 22px;
+  }
+
+  .bmw-info-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+</style>
+
+<section id="megaFinal">
+  <div class="megaFinalInner">
+    <div class="megaFinalIndex">05 / FINAL SCENE</div>
+    <h2>DRIVEN<br>BY DESIGN.</h2>
+    <p>
+      A digital vehicle experience built around performance,
+      engineering and the BMW design language.
+    </p>
+    <button class="megaFinalButton" id="megaTopButton">
+      RETURN TO MACHINE
+    </button>
+  </div>
+</section>
+
+
+<script id="bmw-mega-upgrade-js">
+(function(){
+
+  const nav = document.querySelectorAll('[data-mega]');
+
+  function go(id){
+    const el=document.getElementById(id);
+    if(el){
+      el.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      });
+    }
+  }
+
+  nav.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      go(btn.dataset.mega);
+    });
+  });
+
+  const finalBtn=document.getElementById('megaTopButton');
+
+  if(finalBtn){
+    finalBtn.addEventListener('click',function(){
+      go('hero');
+    });
+  }
+
+  const sections=[
+    'hero',
+    'engine',
+    'performance',
+    'bmw-info-section',
+    'megaFinal'
+  ];
+
+  function updateRail(){
+
+    let current='hero';
+    let best=Infinity;
+
+    sections.forEach(function(id){
+
+      const el=document.getElementById(id);
+
+      if(!el)return;
+
+      const rect=el.getBoundingClientRect();
+      const distance=Math.abs(rect.top-window.innerHeight*.35);
+
+      if(distance<best){
+        best=distance;
+        current=id;
+      }
+
+    });
+
+    nav.forEach(function(btn){
+      btn.classList.toggle(
+        'active',
+        btn.dataset.mega===current
+      );
+    });
+  }
+
+  window.addEventListener(
+    'scroll',
+    updateRail,
+    {passive:true}
+  );
+
+  updateRail();
+
+})();
+</script>
+
+
+<script id="vigil-techdata-reveal-js">
+(function(){
+
+  const note = document.querySelector(".vigilTechNote");
+
+  if(!note) return;
+
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    note.classList.add("vigil-visible");
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    function(entries){
+
+      entries.forEach(function(entry){
+
+        if(entry.isIntersecting){
+
+          note.classList.add("vigil-visible");
+
+          observer.unobserve(note);
+
+        }
+
+      });
+
+    },
+    {
+      threshold:.25,
+      rootMargin:"0px 0px -8% 0px"
+    }
+  );
+
+  observer.observe(note);
+
+})();
+</script>
+
+
+<section id="farazEnding">
+
+  <div class="farazEndingGlow"></div>
+
+  <div class="farazEndingInner">
+
+    <div class="farazEndingIndex">
+      06 / DESIGN SIGNATURE
+    </div>
+
+    <div class="farazEndingLine"></div>
+
+    <h2 class="farazEndingTitle">
+      DESIGNED BY FARAZ
+    </h2>
+
+    <div class="farazEndingCredit">
+      DIGITAL VEHICLE EXPERIENCE
+    </div>
+
+    <div class="farazEndingSub">
+      CONCEPT / DESIGN / INTERACTION
+    </div>
+
+  </div>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+<style id="WHITE-MODULE-BACKGROUND">
+#hero,
+#hero canvas,
+#engine,
+.engine-module,
+.module,
+.scene,
+.viewport,
+#three-container {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+</style>
+
+
+<style id="FORCE-CONTROLS-VISIBLE">
+#hero .ctrl,
+#hero .controls,
+#hero [class*="control"] {
+  position: relative !important;
+  z-index: 9999 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#hero .ctrl {
+  display: flex !important;
+}
+</style>
+
+
+<style id="FINAL-CONTROLS-POSITION">
+#hero .controls{
+  position:absolute !important;
+  z-index:9999 !important;
+  right:28px !important;
+  top:50% !important;
+  bottom:auto !important;
+  left:auto !important;
+  transform:translateY(-50%) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:9px !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+#hero .controls .ctrl{
+  position:relative !important;
+  display:block !important;
+  width:125px !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+#hero .controls .ctrl:hover{
+  transform:translateX(-4px) !important;
+}
+
+#hero .controls .ctrl.active{
+  transform:none !important;
+}
+</style>
+
+
+<style id="FINAL-CONTROLS-POSITION">
+#hero .controls{
+  position:absolute !important;
+  z-index:9999 !important;
+  right:28px !important;
+  top:50% !important;
+  bottom:auto !important;
+  left:auto !important;
+  transform:translateY(-50%) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:9px !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+#hero .controls .ctrl{
+  position:relative !important;
+  display:block !important;
+  width:125px !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+#hero .controls .ctrl:hover{
+  transform:translateX(-4px) !important;
+}
+
+#hero .controls .ctrl.active{
+  transform:none !important;
+}
+</style>
+
+
+<style id="HORIZONTAL-CAR-CONTROLS">
+
+#hero .controls{
+  position:absolute !important;
+  z-index:9999 !important;
+
+  left:50% !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:34px !important;
+
+  transform:translateX(-50%) !important;
+
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  gap:8px !important;
+  padding:8px !important;
+}
+
+#hero .controls .ctrl{
+  width:auto !important;
+  min-width:88px !important;
+  height:40px !important;
+  min-height:40px !important;
+
+  padding:0 15px !important;
+  white-space:nowrap !important;
+
+  transform:none !important;
+}
+
+#hero .controls .ctrl:hover{
+  transform:translateY(-3px) !important;
+}
+
+#hero .controls .ctrl.active{
+  transform:none !important;
+}
+
+@media(max-width:700px){
+  #hero .controls{
+    bottom:18px !important;
+    width:auto !important;
+    max-width:96vw !important;
+    gap:4px !important;
+    padding:6px !important;
+    overflow-x:auto !important;
+  }
+
+  #hero .controls .ctrl{
+    min-width:65px !important;
+    height:34px !important;
+    min-height:34px !important;
+    padding:0 8px !important;
+    font-size:7px !important;
+    letter-spacing:1.2px !important;
+    flex-shrink:0 !important;
+  }
+}
+
+</style>
+
+
+<style id="FINAL-UNIFIED-BLACK-THEME">
+
+html,
+body{
+  background:#050608 !important;
+  color:#fff !important;
+}
+
+/* All major sections */
+#hero,
+#engine,
+section,
+.bmw-info-section{
+  background:#050608 !important;
+  background-image:none !important;
+  color:#fff !important;
+}
+
+/* Cards / panels */
+.card,
+.info-card,
+.performance-card,
+.engine-module,
+.bmw-info-grid > div{
+  background:rgba(255,255,255,.035) !important;
+  color:#fff !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+/* Main text */
+h1,h2,h3,h4,
+strong,
+.bmw-info-section strong{
+  color:#fff !important;
+}
+
+/* Secondary text */
+p,
+.bmw-info-section p,
+.bmw-info-grid p{
+  color:rgba(255,255,255,.62) !important;
+}
+
+/* BMW blue accents */
+.bmw-info-label,
+.bmw-info-grid span{
+  color:#6caed6 !important;
+}
+
+/* Top navigation */
+.topbar{
+  background:rgba(5,6,8,.92) !important;
+  color:#fff !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+/* Control panel */
+#hero .controls{
+  background:rgba(5,6,8,.65) !important;
+}
+
+/* Keep 3D scene black */
+#hero canvas{
+  background:transparent !important;
+}
+
+</style>
+
+
+<style>
+
+
+<script>
+(function(){
+
+  const parts = {
+    headlight: {
+      title: "HEADLIGHT",
+      text: "The front lighting unit provides forward illumination and improves visibility in low-light conditions."
+    },
+    mirror: {
+      title: "SIDE MIRROR",
+      text: "The exterior mirror gives the driver a rearward and sideward view of surrounding traffic."
+    },
+    window: {
+      title: "SIDE WINDOW",
+      text: "The side glass provides visibility while forming part of the vehicle's passenger-cell design."
+    },
+    "front-wheel": {
+      title: "FRONT WHEEL / TYRE",
+      text: "The front wheel and tyre transfer steering and braking forces to the road while supporting vehicle handling."
+    },
+    door: {
+      title: "DOOR",
+      text: "The door provides passenger access and forms an important structural and visual section of the vehicle body."
+    },
+    handle: {
+      title: "DOOR HANDLE",
+      text: "The exterior handle provides the driver's and passengers' physical access point for opening the door."
+    },
+    roof: {
+      title: "ROOF",
+      text: "The roof forms the upper structure of the passenger compartment and contributes to the vehicle's overall silhouette."
+    },
+    "rear-wheel": {
+      title: "REAR WHEEL / TYRE",
+      text: "The rear wheel and tyre provide road contact at the rear axle and contribute to traction, stability and braking."
+    },
+    taillight: {
+      title: "TAILLIGHT",
+      text: "The rear lighting unit communicates braking and vehicle position to traffic approaching from behind."
+    },
+    exhaust: {
+      title: "EXHAUST",
+      text: "The visible exhaust outlet is part of the vehicle's exhaust system, which routes engine exhaust gases toward the rear."
+    }
+  };
+
+  const buttons = document.querySelectorAll(".diagram-hotspot");
+  const lines = document.querySelectorAll(".diagram-line");
+
+  const title = document.getElementById("diagramInfoTitle");
+  const text = document.getElementById("diagramInfoText");
+
+  buttons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const id = button.dataset.part;
+      const data = parts[id];
+
+      if(!data) return;
+
+      buttons.forEach(b => b.classList.remove("active"));
+      lines.forEach(l => l.classList.remove("active"));
+
+      button.classList.add("active");
+
+      const line = document.querySelector(
+        '.diagram-line[data-part="' + id + '"]'
+      );
+
+      if(line) line.classList.add("active");
+
+      title.textContent = data.title;
+      text.textContent = data.text;
+
+    });
+
+  });
+
+})();
+</script>
+
+
+<style>
+
+
+<script>
+(function(){
+
+  const stage = document.querySelector(".diagram-stage");
+
+  if(stage && !stage.querySelector(".tech-scan")){
+
+    const scan = document.createElement("div");
+    scan.className = "tech-scan";
+
+    const tl = document.createElement("div");
+    tl.className = "corner tl";
+
+    const tr = document.createElement("div");
+    tr.className = "corner tr";
+
+    const bl = document.createElement("div");
+    bl.className = "corner bl";
+
+    const br = document.createElement("div");
+    br.className = "corner br";
+
+    const meta = document.createElement("div");
+    meta.className = "tech-meta";
+    meta.textContent = "BMW / EXTERIOR / REF-01";
+
+    const scale = document.createElement("div");
+    scale.className = "tech-scale";
+    scale.textContent = "SIDE PROFILE · 01";
+
+    stage.appendChild(scan);
+    stage.appendChild(tl);
+    stage.appendChild(tr);
+    stage.appendChild(bl);
+    stage.appendChild(br);
+    stage.appendChild(meta);
+    stage.appendChild(scale);
+  }
+
+})();
+</script>
+
+
+<style>
+/* =====================================================
+   BMW CINEMATIC EXPERIENCE — FOUNDATION
+   ===================================================== */
+
+html{
+  scroll-behavior:smooth;
+  background:#030405 !important;
+}
+
+body{
+  margin:0 !important;
+  background:#030405 !important;
+  color:#fff !important;
+  overflow-x:hidden;
+}
+
+/* cinematic section rhythm */
+section{
+  position:relative;
+  isolation:isolate;
+}
+
+/* subtle film grain */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+}
+
+/* premium chapter number */
+.bmw-chapter{
+  position:absolute;
+  top:48px;
+  left:5vw;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  color:rgba(255,255,255,.42);
+  font-size:10px;
+  letter-spacing:4px;
+}
+
+.bmw-chapter::before{
+  content:"";
+  width:34px;
+  height:1px;
+  background:#0878bd;
+  box-shadow:0 0 12px rgba(0,120,189,.7);
+}
+
+/* cinematic typography */
+.cinematic-title{
+  margin:0;
+  font-size:clamp(55px,9vw,145px);
+  line-height:.82;
+  letter-spacing:-6px;
+  font-weight:600;
+}
+
+.cinematic-title span{
+  display:block;
+  color:rgba(255,255,255,.30);
+}
+
+.cinematic-kicker{
+  margin-bottom:20px;
+  color:#6caed6;
+  font-size:10px;
+  letter-spacing:5px;
+}
+
+/* section divider */
+.bmw-divider{
+  width:100%;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.13) 25%,
+    rgba(0,102,177,.55) 50%,
+    rgba(255,255,255,.13) 75%,
+    transparent
+  );
+}
+
+/* hide old visual clutter */
+#bmw-diagram{
+  background:#030405 !important;
+}
+
+/* cinematic scroll reveal */
+.bmw-reveal{
+  opacity:0;
+  transform:translateY(45px);
+  transition:
+    opacity 1s cubic-bezier(.2,.7,.2,1),
+    transform 1s cubic-bezier(.2,.7,.2,1);
+}
+
+.bmw-reveal.visible{
+  opacity:1;
+  transform:none;
+}
+
+/* premium cards */
+.cinematic-card{
+  border:1px solid rgba(255,255,255,.09);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.012)
+    );
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  transition:
+    border-color .35s ease,
+    transform .35s ease,
+    background .35s ease;
+}
+
+.cinematic-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(108,174,214,.38);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(0,102,177,.09),
+      rgba(255,255,255,.015)
+    );
+}
+
+/* remove harsh white areas from older sections */
+#engine,
+#bmw-diagram{
+  background:#030405 !important;
+}
+
+#engine::before,
+#bmw-diagram::before{
+  opacity:.7;
+}
+
+/* mobile */
+@media(max-width:700px){
+
+  .bmw-chapter{
+    top:28px;
+    left:22px;
+    font-size:8px;
+    letter-spacing:3px;
+  }
+
+  .cinematic-title{
+    font-size:55px;
+    letter-spacing:-3px;
+  }
+
+}
+</style>
+
+<script>
+(function(){
+
+  const revealItems = document.querySelectorAll(
+    ".bmw-reveal, .cinematic-card"
+  );
+
+  if(!("IntersectionObserver" in window)){
+    revealItems.forEach(el => el.classList.add("visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold:.12,
+      rootMargin:"0px 0px -8% 0px"
+    }
+  );
+
+  revealItems.forEach(el => observer.observe(el));
+
+})();
+</script>
+
+
+<style>
+/* =====================================================
+   BMW CINEMATIC CHAPTER 01 — THE MACHINE
+   ===================================================== */
+
+#bmw-machine{
+  position:relative;
+  min-height:100vh;
+  padding:130px 6vw 120px;
+  background:#030405 !important;
+  overflow:hidden;
+}
+
+.machine-inner{
+  position:relative;
+  z-index:2;
+  max-width:1250px;
+  margin:auto;
+}
+
+.machine-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:30px;
+}
+
+.machine-copy{
+  max-width:720px;
+}
+
+.machine-copy p{
+  max-width:570px;
+  margin-top:35px;
+  color:rgba(255,255,255,.52);
+  font-size:16px;
+  line-height:1.9;
+}
+
+.machine-index{
+  padding-top:8px;
+  color:rgba(255,255,255,.28);
+  font-size:10px;
+  letter-spacing:4px;
+}
+
+.machine-index strong{
+  display:block;
+  margin-top:8px;
+  color:#6caed6;
+  font-size:22px;
+  letter-spacing:2px;
+}
+
+.machine-visual{
+  position:relative;
+  margin-top:90px;
+  height:380px;
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+.machine-glow{
+  position:absolute;
+  width:75%;
+  height:250px;
+  left:12.5%;
+  top:65px;
+  background:radial-gradient(
+    ellipse,
+    rgba(0,102,177,.18),
+    rgba(0,102,177,.045) 42%,
+    transparent 72%
+  );
+  filter:blur(10px);
+}
+
+.machine-line{
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(108,174,214,.35),
+    transparent
+  );
+}
+
+.machine-specs{
+  position:absolute;
+  left:0;
+  bottom:22px;
+  display:flex;
+  gap:35px;
+  flex-wrap:wrap;
+}
+
+.machine-spec{
+  min-width:100px;
+}
+
+.machine-spec small{
+  display:block;
+  color:rgba(255,255,255,.32);
+  font-size:8px;
+  letter-spacing:2px;
+  margin-bottom:8px;
+}
+
+.machine-spec strong{
+  font-size:13px;
+  letter-spacing:1px;
+}
+
+.machine-scroll{
+  position:absolute;
+  right:0;
+  bottom:22px;
+  color:rgba(255,255,255,.28);
+  font-size:8px;
+  letter-spacing:3px;
+}
+
+.machine-scroll::after{
+  content:"";
+  display:inline-block;
+  width:45px;
+  height:1px;
+  margin-left:12px;
+  vertical-align:middle;
+  background:#0878bd;
+}
+
+@media(max-width:700px){
+
+  #bmw-machine{
+    min-height:auto;
+    padding:100px 22px 85px;
+  }
+
+  .machine-top{
+    display:block;
+  }
+
+  .machine-index{
+    margin-top:35px;
+  }
+
+  .machine-copy p{
+    font-size:13px;
+    line-height:1.8;
+  }
+
+  .machine-visual{
+    margin-top:60px;
+    height:300px;
+  }
+
+  .machine-specs{
+    gap:18px;
+  }
+
+  .machine-scroll{
+    display:none;
+  }
+}
+</style>
+<style>
+/* =====================================================
+   BMW CINEMATIC CHAPTER 02 — DESIGN
+   ===================================================== */
+
+#bmw-design{
+  position:relative;
+  min-height:100vh;
+  padding:130px 6vw;
+  background:#030405 !important;
+  overflow:hidden;
+}
+
+.design-inner{
+  max-width:1250px;
+  margin:auto;
+  position:relative;
+  z-index:2;
+}
+
+.design-heading{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:70px;
+  align-items:end;
+  margin-bottom:75px;
+}
+
+.design-heading p{
+  max-width:470px;
+  margin:0;
+  color:rgba(255,255,255,.50);
+  font-size:15px;
+  line-height:1.9;
+}
+
+.design-grid{
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  grid-template-rows:250px 250px;
+  gap:16px;
+}
+
+.design-card{
+  position:relative;
+  padding:32px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.012)
+    );
+  transition:
+    transform .45s cubic-bezier(.2,.7,.2,1),
+    border-color .35s ease;
+}
+
+.design-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(108,174,214,.38);
+}
+
+.design-card.large{
+  grid-row:span 2;
+}
+
+.design-card-number{
+  color:#6caed6;
+  font-size:9px;
+  letter-spacing:3px;
+}
+
+.design-card h3{
+  position:absolute;
+  left:32px;
+  bottom:48px;
+  margin:0;
+  font-size:clamp(25px,3vw,43px);
+  letter-spacing:-1px;
+}
+
+.design-card p{
+  position:absolute;
+  left:32px;
+  bottom:23px;
+  margin:0;
+  color:rgba(255,255,255,.42);
+  font-size:10px;
+  letter-spacing:1px;
+}
+
+.design-card .design-glow{
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-50px;
+  top:-60px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle,
+    rgba(0,102,177,.25),
+    transparent 68%
+  );
+  transition:transform .6s ease;
+}
+
+.design-card:hover .design-glow{
+  transform:scale(1.4);
+}
+
+.design-line{
+  position:absolute;
+  left:32px;
+  right:32px;
+  bottom:76px;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    rgba(108,174,214,.55),
+    transparent
+  );
+}
+
+.design-footer{
+  margin-top:60px;
+  display:flex;
+  justify-content:space-between;
+  gap:30px;
+  color:rgba(255,255,255,.25);
+  font-size:8px;
+  letter-spacing:3px;
+}
+
+@media(max-width:700px){
+
+  #bmw-design{
+    padding:90px 22px;
+  }
+
+  .design-heading{
+    grid-template-columns:1fr;
+    gap:30px;
+    margin-bottom:45px;
+  }
+
+  .design-grid{
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+  }
+
+  .design-card,
+  .design-card.large{
+    min-height:210px;
+    grid-row:auto;
+  }
+
+  .design-heading p{
+    font-size:13px;
+  }
+
+  .design-footer{
+    display:block;
+    line-height:2;
+  }
+}
+</style>
+<style>
+/* =====================================================
+   BMW CINEMATIC CHAPTER 02 — DESIGN
+   ===================================================== */
+
+#bmw-design{
+  position:relative;
+  min-height:100vh;
+  padding:130px 6vw;
+  background:#030405 !important;
+  overflow:hidden;
+}
+
+.design-inner{
+  max-width:1250px;
+  margin:auto;
+  position:relative;
+  z-index:2;
+}
+
+.design-heading{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:70px;
+  align-items:end;
+  margin-bottom:75px;
+}
+
+.design-heading p{
+  max-width:470px;
+  margin:0;
+  color:rgba(255,255,255,.50);
+  font-size:15px;
+  line-height:1.9;
+}
+
+.design-grid{
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  grid-template-rows:250px 250px;
+  gap:16px;
+}
+
+.design-card{
+  position:relative;
+  padding:32px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.012)
+    );
+  transition:
+    transform .45s cubic-bezier(.2,.7,.2,1),
+    border-color .35s ease;
+}
+
+.design-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(108,174,214,.38);
+}
+
+.design-card.large{
+  grid-row:span 2;
+}
+
+.design-card-number{
+  color:#6caed6;
+  font-size:9px;
+  letter-spacing:3px;
+}
+
+.design-card h3{
+  position:absolute;
+  left:32px;
+  bottom:48px;
+  margin:0;
+  font-size:clamp(25px,3vw,43px);
+  letter-spacing:-1px;
+}
+
+.design-card p{
+  position:absolute;
+  left:32px;
+  bottom:23px;
+  margin:0;
+  color:rgba(255,255,255,.42);
+  font-size:10px;
+  letter-spacing:1px;
+}
+
+.design-card .design-glow{
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-50px;
+  top:-60px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle,
+    rgba(0,102,177,.25),
+    transparent 68%
+  );
+  transition:transform .6s ease;
+}
+
+.design-card:hover .design-glow{
+  transform:scale(1.4);
+}
+
+.design-line{
+  position:absolute;
+  left:32px;
+  right:32px;
+  bottom:76px;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    rgba(108,174,214,.55),
+    transparent
+  );
+}
+
+.design-footer{
+  margin-top:60px;
+  display:flex;
+  justify-content:space-between;
+  gap:30px;
+  color:rgba(255,255,255,.25);
+  font-size:8px;
+  letter-spacing:3px;
+}
+
+@media(max-width:700px){
+
+  #bmw-design{
+    padding:90px 22px;
+  }
+
+  .design-heading{
+    grid-template-columns:1fr;
+    gap:30px;
+    margin-bottom:45px;
+  }
+
+  .design-grid{
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+  }
+
+  .design-card,
+  .design-card.large{
+    min-height:210px;
+    grid-row:auto;
+  }
+
+  .design-heading p{
+    font-size:13px;
+  }
+
+  .design-footer{
+    display:block;
+    line-height:2;
+  }
+}
+</style>
+<style>
+/* =====================================================
+   BMW CINEMATIC CHAPTER 03 — ENGINEERING
+   ===================================================== */
+
+#bmw-engineering{
+  position:relative;
+  min-height:100vh;
+  padding:130px 6vw 120px;
+  background:#030405 !important;
+  overflow:hidden;
+}
+
+.engineering-inner{
+  max-width:1250px;
+  margin:auto;
+  position:relative;
+  z-index:2;
+}
+
+.engineering-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:50px;
+  margin-bottom:70px;
+}
+
+.engineering-head p{
+  max-width:460px;
+  margin:0;
+  color:rgba(255,255,255,.48);
+  font-size:14px;
+  line-height:1.9;
+}
+
+.engineering-system{
+  display:grid;
+  grid-template-columns:1.6fr .7fr;
+  gap:18px;
+}
+
+.engine-core{
+  position:relative;
+  min-height:500px;
+  border:1px solid rgba(255,255,255,.09);
+  overflow:hidden;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(0,102,177,.13),
+      transparent 48%
+    ),
+    rgba(255,255,255,.018);
+}
+
+.engine-core::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:42px 42px;
+}
+
+.engine-core-content{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:30px;
+}
+
+.engine-symbol{
+  width:170px;
+  height:170px;
+  border:1px solid rgba(108,174,214,.45);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  box-shadow:
+    0 0 50px rgba(0,102,177,.13),
+    inset 0 0 40px rgba(0,102,177,.08);
+}
+
+.engine-symbol::before,
+.engine-symbol::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.10);
+}
+
+.engine-symbol::before{
+  inset:18px;
+}
+
+.engine-symbol::after{
+  inset:38px;
+  border-color:rgba(108,174,214,.35);
+}
+
+.engine-symbol span{
+  position:relative;
+  z-index:2;
+  color:#6caed6;
+  font-size:12px;
+  letter-spacing:3px;
+}
+
+.engine-core-content h3{
+  margin:30px 0 10px;
+  font-size:30px;
+  letter-spacing:3px;
+}
+
+.engine-core-content p{
+  max-width:470px;
+  margin:0;
+  color:rgba(255,255,255,.42);
+  font-size:12px;
+  line-height:1.8;
+}
+
+.engine-status{
+  position:absolute;
+  left:24px;
+  bottom:20px;
+  color:rgba(255,255,255,.28);
+  font-size:8px;
+  letter-spacing:3px;
+}
+
+.engine-status::before{
+  content:"";
+  display:inline-block;
+  width:6px;
+  height:6px;
+  margin-right:8px;
+  border-radius:50%;
+  background:#35c77b;
+  box-shadow:0 0 9px rgba(53,199,123,.8);
+}
+
+.engine-data{
+  display:grid;
+  grid-template-rows:repeat(3,1fr);
+  gap:18px;
+}
+
+.engine-data-card{
+  padding:30px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.025);
+  transition:.35s ease;
+}
+
+.engine-data-card:hover{
+  border-color:rgba(108,174,214,.35);
+  transform:translateX(-5px);
+}
+
+.engine-data-card small{
+  color:#6caed6;
+  font-size:8px;
+  letter-spacing:3px;
+}
+
+.engine-data-card strong{
+  display:block;
+  margin-top:18px;
+  font-size:30px;
+  letter-spacing:-1px;
+}
+
+.engine-data-card p{
+  margin:8px 0 0;
+  color:rgba(255,255,255,.35);
+  font-size:10px;
+  line-height:1.6;
+}
+
+.engine-foot{
+  margin-top:28px;
+  display:flex;
+  justify-content:space-between;
+  color:rgba(255,255,255,.23);
+  font-size:8px;
+  letter-spacing:2px;
+}
+
+@media(max-width:700px){
+
+  #bmw-engineering{
+    padding:90px 22px;
+  }
+
+  .engineering-head{
+    display:block;
+    margin-bottom:45px;
+  }
+
+  .engineering-head p{
+    margin-top:28px;
+    font-size:13px;
+  }
+
+  .engineering-system{
+    grid-template-columns:1fr;
+  }
+
+  .engine-core{
+    min-height:390px;
+  }
+
+  .engine-data{
+    grid-template-rows:auto;
+  }
+
+  .engine-data-card{
+    min-height:130px;
+  }
+
+  .engine-foot{
+    line-height:2;
+  }
+}
+</style>
+
+
+<script id="bmw-real-scroll-js">
+
+(function(){
+
+  if(window.__BMW_REAL_SCROLL__) return;
+  window.__BMW_REAL_SCROLL__ = true;
+
+  const root = document.getElementById("bmw-real-scroll");
+
+  if(!root) return;
+
+  const stage = root.querySelector(".bmw-real-stage");
+  const copies = [...root.querySelectorAll(".bmw-real-copy")];
+
+  if(!stage || copies.length !== 5) return;
+
+  let lastProgress = -1;
+
+  function clamp(v,a,b){
+    return Math.max(a,Math.min(b,v));
+  }
+
+  function ease(v){
+    return v * v * (3 - 2 * v);
+  }
+
+  function update(){
+
+    const rect = root.getBoundingClientRect();
+
+    const maxScroll =
+      root.offsetHeight - window.innerHeight;
+
+    if(maxScroll <= 0) return;
+
+    const progress =
+      clamp(-rect.top / maxScroll,0,1);
+
+    /*
+      Continuous 0 -> 4.999 story position.
+    */
+
+    const storyPosition = progress * 5;
+
+    copies.forEach((copy,index)=>{
+
+      const distance = index - storyPosition;
+
+      let opacity = 0;
+
+      if(distance > -1 && distance < 1){
+
+        const center =
+          1 - Math.abs(distance);
+
+        opacity = ease(clamp(center,0,1));
+
+      }
+
+      const movement = distance * 45;
+
+      copy.style.opacity = opacity.toFixed(3);
+
+      copy.style.transform =
+        "translate3d(" +
+        (distance * -45).toFixed(1) +
+        "px," +
+        (-50 + movement).toFixed(1) +
+        "%,0)";
+    });
+
+    /*
+      Communicate continuous scroll progress
+      to the existing Three.js application.
+    */
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "bmw-cinematic-progress",
+        {
+          detail:{
+            progress:progress,
+            position:storyPosition
+          }
+        }
+      )
+    );
+
+    lastProgress = progress;
+  }
+
+  let ticking = false;
+
+  function request(){
+
+    if(ticking) return;
+
+    ticking = true;
+
+    requestAnimationFrame(function(){
+
+      update();
+
+      ticking = false;
+
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    request,
+    {passive:true}
+  );
+
+  window.addEventListener(
+    "resize",
+    request,
+    {passive:true}
+  );
+
+  request();
+
+})();
+
+</script>
+
+<style>
+
+/* =========================================================
+   CONTINUOUS CINEMATIC SCROLL
+   No sticky sections. No forced full-screen stops.
+   Existing content stays unchanged.
+   ========================================================= */
+
+#engine,
+.bmw-info-section{
+  position:relative;
+  overflow:hidden;
+}
+
+/* ENGINE INTRO */
+
+#engine .sectionHead{
+  opacity:0;
+  transform:translate3d(0,70px,0);
+  transition:
+    opacity .8s ease,
+    transform 1s cubic-bezier(.16,1,.3,1);
+}
+
+#engine.cine-show .sectionHead{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+#engine .sectionTitle{
+  transition:
+    opacity .8s ease .05s,
+    transform 1s cubic-bezier(.16,1,.3,1) .05s;
+}
+
+
+/* ENGINE CONTENT */
+
+#engine .engineLayout{
+  opacity:0;
+  transform:translate3d(0,55px,0) scale(.985);
+  transition:
+    opacity .8s ease .12s,
+    transform 1s cubic-bezier(.16,1,.3,1) .12s;
+}
+
+#engine.cine-show .engineLayout{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+}
+
+
+/* ENGINE PARTS */
+
+#engine .part{
+  transition:
+    opacity .45s ease,
+    filter .45s ease;
+}
+
+#engine .connector{
+  transition:opacity .7s ease;
+}
+
+#engine.cine-show .part{
+  opacity:1;
+}
+
+#engine.cine-show .connector{
+  opacity:.7;
+}
+
+
+/* PERFORMANCE */
+
+#engine .performance{
+  opacity:0;
+  transform:translate3d(0,65px,0);
+  transition:
+    opacity .8s ease .2s,
+    transform 1s cubic-bezier(.16,1,.3,1) .2s;
+}
+
+#engine.cine-show .performance{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+#engine .metric{
+  opacity:0;
+  transform:translate3d(0,25px,0);
+  transition:
+    opacity .55s ease,
+    transform .7s cubic-bezier(.16,1,.3,1);
+}
+
+#engine.cine-show .metric{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+#engine.cine-show .metric:nth-child(1){
+  transition-delay:.35s;
+}
+
+#engine.cine-show .metric:nth-child(2){
+  transition-delay:.45s;
+}
+
+#engine.cine-show .metric:nth-child(3){
+  transition-delay:.55s;
+}
+
+#engine.cine-show .metric:nth-child(4){
+  transition-delay:.65s;
+}
+
+
+/* ENGINE NOTE */
+
+#engine .bottomNote{
+  opacity:0;
+  transform:translate3d(0,25px,0);
+  transition:
+    opacity .7s ease .65s,
+    transform .8s ease .65s;
+}
+
+#engine.cine-show .bottomNote{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================================
+   BMW GROUP
+   ========================================================= */
+
+.bmw-info-section .bmw-info-label{
+  opacity:0;
+  transform:translate3d(0,35px,0);
+  transition:
+    opacity .7s ease,
+    transform .8s cubic-bezier(.16,1,.3,1);
+}
+
+.bmw-info-section.cine-show .bmw-info-label{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+.bmw-info-section h2{
+  opacity:0;
+  transform:translate3d(0,55px,0);
+  transition:
+    opacity .8s ease .08s,
+    transform 1s cubic-bezier(.16,1,.3,1) .08s;
+}
+
+.bmw-info-section.cine-show h2{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+.bmw-info-section > .bmw-info-inner > p{
+  opacity:0;
+  transform:translate3d(0,35px,0);
+  transition:
+    opacity .8s ease .18s,
+    transform .9s ease .18s;
+}
+
+.bmw-info-section.cine-show
+> .bmw-info-inner > p{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* BMW CARDS */
+
+.bmw-info-grid > div{
+  opacity:0;
+  transform:translate3d(0,45px,0);
+  transition:
+    opacity .65s ease,
+    transform .8s cubic-bezier(.16,1,.3,1);
+}
+
+.bmw-info-section.cine-show
+.bmw-info-grid > div:nth-child(1){
+  opacity:1;
+  transform:translate3d(0,0,0);
+  transition-delay:.30s;
+}
+
+.bmw-info-section.cine-show
+.bmw-info-grid > div:nth-child(2){
+  opacity:1;
+  transform:translate3d(0,0,0);
+  transition-delay:.42s;
+}
+
+.bmw-info-section.cine-show
+.bmw-info-grid > div:nth-child(3){
+  opacity:1;
+  transform:translate3d(0,0,0);
+  transition-delay:.54s;
+}
+
+
+/* SOURCE */
+
+.bmw-source-note{
+  opacity:0;
+  transition:opacity .7s ease .65s;
+}
+
+.bmw-info-section.cine-show
+.bmw-source-note{
+  opacity:1;
+}
+
+
+/* Mobile */
+
+@media(max-width:700px){
+
+  #engine .sectionHead,
+  #engine .engineLayout,
+  #engine .performance{
+    transform:translate3d(0,35px,0);
+  }
+
+  .bmw-info-section h2{
+    transform:translate3d(0,35px,0);
+  }
+
+}
+
+
+/* Reduced motion */
+
+@media(prefers-reduced-motion:reduce){
+
+  #engine *,
+  .bmw-info-section *{
+    transition:none !important;
+  }
+
+}
+
+</style>
+
+<script>
+
+/* =========================================================
+   CONTINUOUS SCROLL OBSERVER
+   ========================================================= */
+
+(function(){
+
+  const targets = [
+    document.getElementById('engine'),
+    document.querySelector('.bmw-info-section')
+  ].filter(Boolean);
+
+  if(!targets.length) return;
+
+  const observer =
+    new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(entry.isIntersecting){
+
+            entry.target.classList.add('cine-show');
+
+          }else{
+
+            /*
+              Remove when it leaves so the cinematic
+              reveal can happen again naturally.
+            */
+
+            entry.target.classList.remove('cine-show');
+
+          }
+
+        });
+
+      },
+      {
+        threshold:.12,
+        rootMargin:'-5% 0px -10% 0px'
+      }
+    );
+
+  targets.forEach(function(target){
+
+    observer.observe(target);
+
+  });
+
+})();
+
+</script>
+
+
+<style>
+
+/* =========================================================
+   SEQUENTIAL CINEMATIC BMW EXPERIENCE
+   Existing content only
+   No duplicate sections
+   No sticky / pinned stopping
+   ========================================================= */
+
+:root{
+  --cine-bg:#050608;
+  --cine-white:#f2f4f6;
+  --cine-muted:#737c86;
+  --cine-line:rgba(255,255,255,.11);
+  --cine-blue:#78a8ff;
+}
+
+html{
+  background:var(--cine-bg);
+  scroll-behavior:smooth;
+}
+
+body{
+  background:var(--cine-bg);
+  color:var(--cine-white);
+  overflow-x:hidden;
+}
+
+
+/* =========================================================
+   GLOBAL CINEMATIC DIVIDERS
+   ========================================================= */
+
+#engine,
+.bmw-info-section{
+  position:relative;
+  overflow:hidden;
+}
+
+#engine::after,
+.bmw-info-section::after{
+  content:"";
+  position:absolute;
+  left:5vw;
+  right:5vw;
+  top:0;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    var(--cine-line),
+    transparent
+  );
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   ENGINE — SCENE 02
+   ========================================================= */
+
+#engine{
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(80,100,130,.075),
+      transparent 48%
+    ),
+    var(--cine-bg);
+}
+
+#engine::before{
+  content:"02";
+  position:absolute;
+  right:4vw;
+  top:7%;
+  font-size:clamp(120px,18vw,260px);
+  line-height:.8;
+  font-weight:800;
+  letter-spacing:-.1em;
+  color:rgba(255,255,255,.018);
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   BLOCK 1 — ENGINE HEADER
+   ========================================================= */
+
+#engine .sectionHead{
+  position:relative;
+  z-index:2;
+
+  opacity:0;
+  transform:
+    translate3d(0,90px,0)
+    scale(.97);
+
+  transition:
+    opacity .9s ease,
+    transform 1.15s cubic-bezier(.16,1,.3,1);
+}
+
+#engine.scene-active .sectionHead{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+#engine .sectionHead::before{
+  content:"";
+  display:block;
+  width:0;
+  height:1px;
+  margin-bottom:25px;
+  background:var(--cine-blue);
+
+  transition:
+    width .8s cubic-bezier(.16,1,.3,1);
+}
+
+#engine.scene-active .sectionHead::before{
+  width:65px;
+}
+
+#engine .sectionHead .eyebrow{
+  opacity:0;
+  transform:translateX(-30px);
+
+  transition:
+    opacity .7s ease .12s,
+    transform .8s ease .12s;
+}
+
+#engine.scene-active .sectionHead .eyebrow{
+  opacity:1;
+  transform:translateX(0);
+}
+
+#engine .sectionTitle{
+  opacity:0;
+  transform:translateY(45px);
+
+  transition:
+    opacity .9s ease .18s,
+    transform 1s cubic-bezier(.16,1,.3,1) .18s;
+}
+
+#engine.scene-active .sectionTitle{
+  opacity:1;
+  transform:translateY(0);
+}
+
+#engine .sectionHead p{
+  opacity:0;
+  transform:translateY(25px);
+
+  transition:
+    opacity .8s ease .3s,
+    transform .9s ease .3s;
+}
+
+#engine.scene-active .sectionHead p{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+/* =========================================================
+   BLOCK 2 — POWERTRAIN
+   ========================================================= */
+
+#engine .engineLayout{
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.96);
+
+  transition:
+    opacity .9s ease,
+    transform 1.2s cubic-bezier(.16,1,.3,1);
+}
+
+#engine.scene-active .engineLayout{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+
+  transition-delay:.18s;
+}
+
+#engine .diagramCard,
+#engine .infoCard{
+  position:relative;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.012)
+    );
+  border:1px solid rgba(255,255,255,.09);
+
+  transition:
+    border-color .5s ease,
+    background .5s ease,
+    transform .5s ease;
+}
+
+#engine .diagramCard:hover,
+#engine .infoCard:hover{
+  border-color:rgba(120,168,255,.25);
+}
+
+
+/* =========================================================
+   BLOCK 3 — PERFORMANCE
+   ========================================================= */
+
+#engine .performance{
+  opacity:0;
+  transform:
+    translate3d(0,120px,0)
+    scale(.96);
+
+  transition:
+    opacity 1s ease,
+    transform 1.2s cubic-bezier(.16,1,.3,1);
+}
+
+#engine.performance-active .performance{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+#engine .performance::before{
+  content:"03 / PERFORMANCE";
+  display:block;
+  margin-bottom:20px;
+  font-size:9px;
+  letter-spacing:.4em;
+  color:var(--cine-muted);
+}
+
+#engine .performance h2{
+  letter-spacing:-.05em;
+}
+
+#engine .metric{
+  opacity:0;
+  transform:translate3d(0,45px,0);
+
+  transition:
+    opacity .65s ease,
+    transform .8s cubic-bezier(.16,1,.3,1),
+    background .3s ease;
+}
+
+#engine.performance-active .metric{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+#engine.performance-active .metric:nth-child(1){
+  transition-delay:.12s;
+}
+
+#engine.performance-active .metric:nth-child(2){
+  transition-delay:.22s;
+}
+
+#engine.performance-active .metric:nth-child(3){
+  transition-delay:.32s;
+}
+
+#engine.performance-active .metric:nth-child(4){
+  transition-delay:.42s;
+}
+
+#engine .metric:hover{
+  background:rgba(255,255,255,.025);
+}
+
+
+/* =========================================================
+   BMW GROUP SCENE
+   ========================================================= */
+
+.bmw-info-section{
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(70,90,120,.06),
+      transparent 50%
+    ),
+    var(--cine-bg);
+}
+
+.bmw-info-section::before{
+  content:"04";
+  position:absolute;
+  left:4vw;
+  top:7%;
+  font-size:clamp(120px,18vw,280px);
+  line-height:.8;
+  font-weight:800;
+  letter-spacing:-.1em;
+  color:rgba(255,255,255,.018);
+}
+
+
+/* =========================================================
+   BLOCK 4 — BMW GROUP INTRO
+   ========================================================= */
+
+.bmw-info-label{
+  opacity:0;
+  transform:translate3d(0,70px,0);
+
+  transition:
+    opacity .8s ease,
+    transform 1s cubic-bezier(.16,1,.3,1);
+}
+
+.bmw-info-section.scene-active .bmw-info-label{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+.bmw-info-section h2{
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.96);
+
+  transition:
+    opacity 1s ease .12s,
+    transform 1.2s cubic-bezier(.16,1,.3,1) .12s;
+}
+
+.bmw-info-section.scene-active h2{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+.bmw-info-section > .bmw-info-inner > p{
+  opacity:0;
+  transform:translate3d(0,50px,0);
+
+  transition:
+    opacity .9s ease .25s,
+    transform 1s cubic-bezier(.16,1,.3,1) .25s;
+}
+
+.bmw-info-section.scene-active
+> .bmw-info-inner > p{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================================
+   BLOCKS 5 / 6 / 7
+   DESIGN — TECHNOLOGY — ELECTROMOBILITY
+   ========================================================= */
+
+.bmw-info-grid{
+  position:relative;
+}
+
+.bmw-info-grid > div{
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.95);
+
+  transition:
+    opacity .8s ease,
+    transform 1s cubic-bezier(.16,1,.3,1),
+    background .35s ease;
+}
+
+.bmw-info-section.grid-active
+.bmw-info-grid > div:nth-child(1){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.05s;
+}
+
+.bmw-info-section.grid-active
+.bmw-info-grid > div:nth-child(2){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.22s;
+}
+
+.bmw-info-section.grid-active
+.bmw-info-grid > div:nth-child(3){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.39s;
+}
+
+.bmw-info-grid > div::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:0;
+  height:1px;
+  background:var(--cine-blue);
+
+  transition:
+    width .8s cubic-bezier(.16,1,.3,1);
+}
+
+.bmw-info-section.grid-active
+.bmw-info-grid > div::before{
+  width:45px;
+}
+
+
+/* =========================================================
+   SOURCE
+   ========================================================= */
+
+.bmw-source-note{
+  opacity:0;
+  transform:translateY(30px);
+
+  transition:
+    opacity .7s ease .55s,
+    transform .8s ease .55s;
+}
+
+.bmw-info-section.grid-active .bmw-source-note{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+/* =========================================================
+   CINEMATIC SCENE TRANSITION
+   ========================================================= */
+
+#engine,
+.bmw-info-section{
+  transition:
+    background-position 1s ease;
+}
+
+#engine.scene-active{
+  background-position:center 30%;
+}
+
+.bmw-info-section.scene-active{
+  background-position:center 35%;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:800px){
+
+  #engine::before,
+  .bmw-info-section::before{
+    font-size:100px;
+  }
+
+  #engine .sectionHead{
+    transform:translate3d(0,55px,0) scale(.98);
+  }
+
+  #engine .engineLayout,
+  #engine .performance{
+    transform:translate3d(0,65px,0) scale(.98);
+  }
+
+  .bmw-info-section h2{
+    transform:translate3d(0,65px,0) scale(.98);
+  }
+
+  .bmw-info-grid{
+    grid-template-columns:1fr;
+  }
+
+  .bmw-info-grid > div{
+    border-right:0;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+    transition:none !important;
+    animation:none !important;
+  }
+
+  #engine .sectionHead,
+  #engine .engineLayout,
+  #engine .performance,
+  #engine .metric,
+  .bmw-info-label,
+  .bmw-info-section h2,
+  .bmw-info-section > .bmw-info-inner > p,
+  .bmw-info-grid > div,
+  .bmw-source-note{
+    opacity:1 !important;
+    transform:none !important;
+  }
+
+}
+
+</style>
+
+
+<script>
+
+/* =========================================================
+   SEQUENTIAL SCENE CONTROLLER
+   ========================================================= */
+
+(function(){
+
+  const engine=document.getElementById('engine');
+  const bmw=document.querySelector('.bmw-info-section');
+
+  if(!engine || !bmw)return;
+
+
+  /* -----------------------------------------
+     ENGINE HEADER / MAIN SCENE
+     ----------------------------------------- */
+
+  const engineObserver=new IntersectionObserver(
+    function(entries){
+
+      entries.forEach(function(entry){
+
+        if(entry.isIntersecting){
+
+          engine.classList.add('scene-active');
+
+        }else{
+
+          engine.classList.remove('scene-active');
+
+        }
+
+      });
+
+    },
+    {
+      threshold:.16,
+      rootMargin:'-12% 0px -20% 0px'
+    }
+  );
+
+  engineObserver.observe(engine);
+
+
+  /* -----------------------------------------
+     PERFORMANCE AS ITS OWN SCENE
+     ----------------------------------------- */
+
+  const performance=engine.querySelector('.performance');
+
+  if(performance){
+
+    const performanceObserver=
+      new IntersectionObserver(
+        function(entries){
+
+          entries.forEach(function(entry){
+
+            if(entry.isIntersecting){
+
+              engine.classList.add('performance-active');
+
+            }else{
+
+              engine.classList.remove('performance-active');
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.18,
+          rootMargin:'-8% 0px -15% 0px'
+        }
+      );
+
+    performanceObserver.observe(performance);
+
+  }
+
+
+  /* -----------------------------------------
+     BMW GROUP INTRO
+     ----------------------------------------- */
+
+  const bmwIntroObserver=
+    new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(entry.isIntersecting){
+
+            bmw.classList.add('scene-active');
+
+          }else{
+
+            bmw.classList.remove('scene-active');
+
+          }
+
+        });
+
+      },
+      {
+        threshold:.12,
+        rootMargin:'-8% 0px -18% 0px'
+      }
+    );
+
+  bmwIntroObserver.observe(bmw);
+
+
+  /* -----------------------------------------
+     DESIGN / TECHNOLOGY / ELECTROMOBILITY
+     ----------------------------------------- */
+
+  const grid=bmw.querySelector('.bmw-info-grid');
+
+  if(grid){
+
+    const gridObserver=
+      new IntersectionObserver(
+        function(entries){
+
+          entries.forEach(function(entry){
+
+            if(entry.isIntersecting){
+
+              bmw.classList.add('grid-active');
+
+            }else{
+
+              bmw.classList.remove('grid-active');
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.15,
+          rootMargin:'-5% 0px -10% 0px'
+        }
+      );
+
+    gridObserver.observe(grid);
+
+  }
+
+
+  /* -----------------------------------------
+     SUBTLE SCROLL PARALLAX
+     ----------------------------------------- */
+
+  let ticking=false;
+
+  function parallax(){
+
+    ticking=false;
+
+    const viewport=window.innerHeight;
+
+    const items=document.querySelectorAll(
+      '#engine .sectionHead, '+
+      '#engine .performance, '+
+      '.bmw-info-inner'
+    );
+
+    items.forEach(function(item){
+
+      const rect=item.getBoundingClientRect();
+
+      if(rect.bottom<0 || rect.top>viewport){
+        return;
+      }
+
+      const center=rect.top+(rect.height/2);
+      const distance=(center-viewport/2)/viewport;
+
+      const movement=
+        Math.max(
+          -12,
+          Math.min(12,-distance*8)
+        );
+
+      item.style.transform=
+        'translate3d(0,'+
+        movement.toFixed(2)+
+        'px,0)';
+
+    });
+
+  }
+
+  window.addEventListener(
+    'scroll',
+    function(){
+
+      if(!ticking){
+
+        ticking=true;
+
+        requestAnimationFrame(parallax);
+
+      }
+
+    },
+    {passive:true}
+  );
+
+  parallax();
+
+})();
+
+</script>
+
+
+<style>
+
+/* =========================================================
+   LOWER BMW CONTENT — ONE BLOCK AT A TIME
+   DESIGN → TECHNOLOGY → ELECTROMOBILITY
+   ========================================================= */
+
+/* Keep the grid as a vertical cinematic sequence */
+
+.bmw-info-grid{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+  border-top:1px solid rgba(255,255,255,.10);
+}
+
+/* Every block gets its own scene */
+
+.bmw-info-grid > div{
+  position:relative;
+  width:100%;
+  min-height:clamp(260px,38vh,430px);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  padding:
+    clamp(45px,7vw,90px)
+    clamp(25px,6vw,80px);
+
+  border-right:0 !important;
+  border-bottom:1px solid rgba(255,255,255,.10);
+
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.96);
+
+  transition:
+    opacity .9s ease,
+    transform 1.1s cubic-bezier(.16,1,.3,1),
+    background .4s ease;
+}
+
+/* remove old all-at-once reveal */
+
+.bmw-info-section.grid-active
+.bmw-info-grid > div:nth-child(1),
+.bmw-info-section.grid-active
+.bmw-info-grid > div:nth-child(2),
+.bmw-info-section.grid-active
+.bmw-info-grid > div:nth-child(3){
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.96);
+}
+
+/* Individual active scenes */
+
+.bmw-info-grid > div.lower-scene-active{
+  opacity:1 !important;
+  transform:
+    translate3d(0,0,0)
+    scale(1) !important;
+}
+
+/* Large section number */
+
+.bmw-info-grid > div::after{
+  position:absolute;
+  right:clamp(25px,6vw,80px);
+  top:50%;
+  transform:translateY(-50%);
+
+  font-size:clamp(80px,14vw,190px);
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.1em;
+
+  color:rgba(255,255,255,.025);
+  pointer-events:none;
+}
+
+.bmw-info-grid > div:nth-child(1)::after{
+  content:"01";
+}
+
+.bmw-info-grid > div:nth-child(2)::after{
+  content:"02";
+}
+
+.bmw-info-grid > div:nth-child(3)::after{
+  content:"03";
+}
+
+/* Small blue scene line */
+
+.bmw-info-grid > div::before{
+  content:"";
+  position:absolute;
+  left:clamp(25px,6vw,80px);
+  top:0;
+
+  width:0;
+  height:1px;
+
+  background:#78a8ff;
+
+  transition:
+    width .8s cubic-bezier(.16,1,.3,1);
+}
+
+.bmw-info-grid > div.lower-scene-active::before{
+  width:65px;
+}
+
+/* Heading */
+
+.bmw-info-grid > div h3{
+  position:relative;
+  z-index:2;
+
+  font-size:clamp(16px,2vw,25px);
+  letter-spacing:.35em;
+  line-height:1;
+
+  opacity:0;
+  transform:translate3d(-35px,0,0);
+
+  transition:
+    opacity .7s ease .15s,
+    transform .8s cubic-bezier(.16,1,.3,1) .15s;
+}
+
+.bmw-info-grid > div.lower-scene-active h3{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+/* Paragraph */
+
+.bmw-info-grid > div p{
+  position:relative;
+  z-index:2;
+
+  max-width:720px;
+
+  margin-top:25px;
+
+  font-size:clamp(12px,1.3vw,15px);
+  line-height:1.9;
+  color:#7d8791;
+
+  opacity:0;
+  transform:translate3d(0,30px,0);
+
+  transition:
+    opacity .8s ease .3s,
+    transform .9s cubic-bezier(.16,1,.3,1) .3s;
+}
+
+.bmw-info-grid > div.lower-scene-active p{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+/* Hover */
+
+.bmw-info-grid > div.lower-scene-active:hover{
+  background:rgba(255,255,255,.018);
+}
+
+
+/* =========================================================
+   SOURCE = FINAL SCENE
+   ========================================================= */
+
+.bmw-source-note{
+  opacity:0;
+  transform:translate3d(0,60px,0);
+
+  transition:
+    opacity .8s ease,
+    transform 1s cubic-bezier(.16,1,.3,1);
+}
+
+.bmw-source-note.source-scene-active{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:700px){
+
+  .bmw-info-grid > div{
+    min-height:300px;
+    justify-content:center;
+  }
+
+  .bmw-info-grid > div::after{
+    right:20px;
+    font-size:90px;
+  }
+
+  .bmw-info-grid > div h3{
+    font-size:14px;
+  }
+
+}
+
+</style>
+
+
+<script>
+
+/* =========================================================
+   LOWER CONTENT SEQUENTIAL CONTROLLER
+   ========================================================= */
+
+(function(){
+
+  const cards=[
+    ...document.querySelectorAll(
+      '.bmw-info-grid > div'
+    )
+  ];
+
+  const source=
+    document.querySelector('.bmw-source-note');
+
+  if(!cards.length)return;
+
+
+  /* -----------------------------------------
+     Each card becomes its own scene
+     ----------------------------------------- */
+
+  const cardObserver=
+    new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(entry.isIntersecting){
+
+            entry.target.classList.add(
+              'lower-scene-active'
+            );
+
+          }else{
+
+            entry.target.classList.remove(
+              'lower-scene-active'
+            );
+
+          }
+
+        });
+
+      },
+      {
+        threshold:.30,
+        rootMargin:'-8% 0px -20% 0px'
+      }
+    );
+
+
+  cards.forEach(function(card){
+
+    cardObserver.observe(card);
+
+  });
+
+
+  /* -----------------------------------------
+     Final source scene
+     ----------------------------------------- */
+
+  if(source){
+
+    const sourceObserver=
+      new IntersectionObserver(
+        function(entries){
+
+          entries.forEach(function(entry){
+
+            if(entry.isIntersecting){
+
+              source.classList.add(
+                'source-scene-active'
+              );
+
+            }else{
+
+              source.classList.remove(
+                'source-scene-active'
+              );
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.4,
+          rootMargin:'-10% 0px -10% 0px'
+        }
+      );
+
+    sourceObserver.observe(source);
+
+  }
+
+})();
+
+</script>
+
+
+<style>
+
+/* =========================================================
+   ENGINE SYSTEM 2 — SEQUENTIAL CINEMATIC SCENES
+   ========================================================= */
+
+/* ENGINE layout becomes a vertical sequence */
+
+#engine .engineLayout{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:clamp(90px,12vw,170px);
+}
+
+
+/* =========================================================
+   SCENE 02A — POWERTRAIN DIAGRAM
+   ========================================================= */
+
+#engine .diagramCard{
+  position:relative;
+
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.94);
+
+  transition:
+    opacity .9s ease,
+    transform 1.15s cubic-bezier(.16,1,.3,1),
+    border-color .4s ease;
+}
+
+#engine .diagramCard.engine-scene-active{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+
+/* SYSTEM 2 label */
+
+#engine .diagramCard::before{
+  content:"SYSTEM 02 / POWERTRAIN";
+  position:absolute;
+
+  top:20px;
+  left:25px;
+
+  font-size:8px;
+  letter-spacing:.34em;
+
+  color:#66707b;
+
+  opacity:0;
+  transform:translateX(-25px);
+
+  transition:
+    opacity .6s ease .15s,
+    transform .7s ease .15s;
+}
+
+#engine .diagramCard.engine-scene-active::before{
+  opacity:1;
+  transform:translateX(0);
+}
+
+
+/* Diagram itself */
+
+#engine .diagramCard svg{
+  opacity:0;
+  transform:
+    scale(.94)
+    translateY(25px);
+
+  transition:
+    opacity .9s ease .25s,
+    transform 1.1s cubic-bezier(.16,1,.3,1) .25s;
+}
+
+#engine .diagramCard.engine-scene-active svg{
+  opacity:1;
+  transform:
+    scale(1)
+    translateY(0);
+}
+
+
+/* =========================================================
+   SCENE 02B — COMPONENT INFORMATION
+   ========================================================= */
+
+#engine .infoCard{
+  position:relative;
+
+  opacity:0;
+  transform:
+    translate3d(0,100px,0)
+    scale(.95);
+
+  transition:
+    opacity .9s ease,
+    transform 1.1s cubic-bezier(.16,1,.3,1),
+    border-color .4s ease;
+}
+
+#engine .infoCard.engine-info-active{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+
+/* LIVE DATA label */
+
+#engine .infoCard::before{
+  content:"LIVE SYSTEM DATA";
+
+  position:absolute;
+  top:20px;
+  right:25px;
+
+  font-size:8px;
+  letter-spacing:.32em;
+
+  color:#66707b;
+
+  opacity:0;
+
+  transition:
+    opacity .6s ease .15s;
+}
+
+#engine .infoCard.engine-info-active::before{
+  opacity:1;
+}
+
+
+/* Info contents */
+
+#engine .infoCard > *{
+  opacity:0;
+  transform:translate3d(0,25px,0);
+
+  transition:
+    opacity .6s ease,
+    transform .7s cubic-bezier(.16,1,.3,1);
+}
+
+#engine .infoCard.engine-info-active > *{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+#engine .infoCard.engine-info-active > *:nth-child(1){
+  transition-delay:.12s;
+}
+
+#engine .infoCard.engine-info-active > *:nth-child(2){
+  transition-delay:.22s;
+}
+
+#engine .infoCard.engine-info-active > *:nth-child(3){
+  transition-delay:.32s;
+}
+
+#engine .infoCard.engine-info-active > *:nth-child(4){
+  transition-delay:.42s;
+}
+
+
+/* =========================================================
+   ENGINE COMPONENT HIGHLIGHT
+   ========================================================= */
+
+#engine .part{
+  transition:
+    opacity .35s ease,
+    filter .35s ease,
+    transform .35s ease;
+}
+
+#engine .part:hover{
+  filter:
+    brightness(1.5)
+    drop-shadow(0 0 8px rgba(120,168,255,.35));
+}
+
+
+/* =========================================================
+   SCENE MARKER
+   ========================================================= */
+
+#engine .diagramCard::after{
+  content:"02A";
+
+  position:absolute;
+  right:25px;
+  bottom:20px;
+
+  font-size:9px;
+  letter-spacing:.25em;
+
+  color:#4f5862;
+}
+
+#engine .infoCard::after{
+  content:"02B";
+
+  position:absolute;
+  right:25px;
+  bottom:20px;
+
+  font-size:9px;
+  letter-spacing:.25em;
+
+  color:#4f5862;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:800px){
+
+  #engine .engineLayout{
+    gap:100px;
+  }
+
+  #engine .diagramCard,
+  #engine .infoCard{
+    transform:
+      translate3d(0,70px,0)
+      scale(.97);
+  }
+
+}
+
+</style>
+
+
+<script>
+
+/* =========================================================
+   ENGINE SYSTEM 2 SEQUENTIAL CONTROLLER
+   ========================================================= */
+
+(function(){
+
+  const engine=document.getElementById('engine');
+
+  if(!engine)return;
+
+
+  const diagram=
+    engine.querySelector('.diagramCard');
+
+  const info=
+    engine.querySelector('.infoCard');
+
+
+  /* -----------------------------------------
+     SYSTEM 02A — DIAGRAM
+     ----------------------------------------- */
+
+  if(diagram){
+
+    const diagramObserver=
+      new IntersectionObserver(
+        function(entries){
+
+          entries.forEach(function(entry){
+
+            if(entry.isIntersecting){
+
+              diagram.classList.add(
+                'engine-scene-active'
+              );
+
+            }else{
+
+              diagram.classList.remove(
+                'engine-scene-active'
+              );
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.30,
+          rootMargin:'-8% 0px -18% 0px'
+        }
+      );
+
+    diagramObserver.observe(diagram);
+
+  }
+
+
+  /* -----------------------------------------
+     SYSTEM 02B — INFO CARD
+     ----------------------------------------- */
+
+  if(info){
+
+    const infoObserver=
+      new IntersectionObserver(
+        function(entries){
+
+          entries.forEach(function(entry){
+
+            if(entry.isIntersecting){
+
+              info.classList.add(
+                'engine-info-active'
+              );
+
+            }else{
+
+              info.classList.remove(
+                'engine-info-active'
+              );
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.30,
+          rootMargin:'-8% 0px -18% 0px'
+        }
+      );
+
+    infoObserver.observe(info);
+
+  }
+
+})();
+
+</script>
+
+
+<style>
+
+/* =========================================================
+   SCENE 03 — PERFORMANCE
+   ========================================================= */
+
+#engine .performance{
+  position:relative;
+  overflow:hidden;
+
+  opacity:0;
+  transform:
+    translate3d(0,110px,0)
+    scale(.94);
+
+  transition:
+    opacity 1s ease,
+    transform 1.2s cubic-bezier(.16,1,.3,1);
+}
+
+
+/* PERFORMANCE ACTIVE */
+
+#engine .performance.performance-scene-active{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+
+/* =========================================================
+   PERFORMANCE HEADER
+   ========================================================= */
+
+#engine .performance::before{
+  content:"03 / PERFORMANCE";
+
+  display:block;
+
+  margin-bottom:24px;
+
+  font-size:9px;
+  letter-spacing:.42em;
+  color:#707a84;
+
+  opacity:0;
+  transform:translate3d(-35px,0,0);
+
+  transition:
+    opacity .7s ease .12s,
+    transform .8s cubic-bezier(.16,1,.3,1) .12s;
+}
+
+#engine .performance.performance-scene-active::before{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================================
+   PERFORMANCE TITLE
+   ========================================================= */
+
+#engine .performance h2{
+  opacity:0;
+  transform:
+    translate3d(0,60px,0)
+    scale(.97);
+
+  transition:
+    opacity .8s ease .2s,
+    transform 1s cubic-bezier(.16,1,.3,1) .2s;
+}
+
+#engine .performance.performance-scene-active h2{
+  opacity:1;
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+}
+
+
+/* =========================================================
+   PERFORMANCE SUBTITLE / NOTE
+   ========================================================= */
+
+#engine .performance > p{
+  opacity:0;
+  transform:translate3d(0,35px,0);
+
+  transition:
+    opacity .7s ease .32s,
+    transform .8s cubic-bezier(.16,1,.3,1) .32s;
+}
+
+#engine .performance.performance-scene-active > p{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================================
+   METRICS — ONE BY ONE
+   ========================================================= */
+
+#engine .performance .metric{
+  opacity:0;
+  transform:
+    translate3d(0,70px,0)
+    scale(.96);
+
+  transition:
+    opacity .7s ease,
+    transform .85s cubic-bezier(.16,1,.3,1),
+    background .3s ease;
+}
+
+#engine .performance.performance-scene-active .metric:nth-child(1){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.38s;
+}
+
+#engine .performance.performance-scene-active .metric:nth-child(2){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.52s;
+}
+
+#engine .performance.performance-scene-active .metric:nth-child(3){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.66s;
+}
+
+#engine .performance.performance-scene-active .metric:nth-child(4){
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  transition-delay:.80s;
+}
+
+
+/* =========================================================
+   BIG NUMBERS
+   ========================================================= */
+
+#engine .performance .metric strong{
+  display:block;
+
+  font-size:clamp(42px,7vw,92px);
+  line-height:.9;
+  letter-spacing:-.07em;
+  font-weight:600;
+
+  transition:
+    transform .4s ease,
+    letter-spacing .4s ease;
+}
+
+#engine .performance .metric:hover strong{
+  transform:translateX(6px);
+  letter-spacing:-.055em;
+}
+
+
+/* Metric labels */
+
+#engine .performance .metric span{
+  display:block;
+
+  margin-top:14px;
+
+  font-size:8px;
+  letter-spacing:.32em;
+  color:#707983;
+}
+
+
+/* =========================================================
+   PERFORMANCE LINE
+   ========================================================= */
+
+#engine .performance{
+  border-top:1px solid rgba(255,255,255,.10);
+}
+
+#engine .performance::after{
+  content:"";
+
+  position:absolute;
+
+  top:-1px;
+  left:0;
+
+  width:0;
+  height:1px;
+
+  background:#78a8ff;
+
+  transition:
+    width 1s cubic-bezier(.16,1,.3,1);
+}
+
+#engine .performance.performance-scene-active::after{
+  width:90px;
+}
+
+
+/* =========================================================
+   PERFORMANCE FOOTER
+   ========================================================= */
+
+#engine .performance .bottomNote{
+  opacity:0;
+  transform:translate3d(0,30px,0);
+
+  transition:
+    opacity .7s ease 1s,
+    transform .8s ease 1s;
+}
+
+#engine .performance.performance-scene-active
+.bottomNote{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:700px){
+
+  #engine .performance{
+    transform:
+      translate3d(0,75px,0)
+      scale(.97);
+  }
+
+  #engine .performance .metric strong{
+    font-size:48px;
+  }
+
+}
+
+</style>
+
+
+<script>
+
+/* =========================================================
+   PERFORMANCE SCENE CONTROLLER
+   ========================================================= */
+
+(function(){
+
+  const performance=
+    document.querySelector(
+      '#engine .performance'
+    );
+
+  if(!performance)return;
+
+
+  const observer=
+    new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(entry.isIntersecting){
+
+            performance.classList.add(
+              'performance-scene-active'
+            );
+
+          }else{
+
+            performance.classList.remove(
+              'performance-scene-active'
+            );
+
+          }
+
+        });
+
+      },
+      {
+        threshold:.30,
+        rootMargin:'-8% 0px -18% 0px'
+      }
+    );
+
+
+  observer.observe(performance);
+
+})();
+
+</script>
+
+
+<style id="performance-note-cinematic">
+
+/* ===== PERFORMANCE 03 + TECHNICAL NOTE SEQUENCE ===== */
+
+#engine .performance{
+  position:relative;
+  overflow:hidden;
+}
+
+#engine .performance::before{
+  content:"03 / PERFORMANCE";
+  display:block;
+  font-family:monospace;
+  font-size:10px;
+  letter-spacing:.24em;
+  color:rgba(255,255,255,.38);
+  margin-bottom:22px;
+  opacity:.0;
+  transform:translateY(25px);
+  transition:
+    opacity 900ms ease,
+    transform 1000ms cubic-bezier(.2,.7,.2,1);
+}
+
+#engine .performance.performance-scene-active::before{
+  opacity:1;
+  transform:translateY(0);
+}
+
+#engine .performance-scene-active h2{
+  animation:performanceTitleIn 1s cubic-bezier(.2,.7,.2,1) both;
+}
+
+#engine .performance-scene-active p{
+  animation:performanceTextIn 1s .12s cubic-bezier(.2,.7,.2,1) both;
+}
+
+#engine .performance-scene-active .metric{
+  animation:performanceMetricIn 900ms cubic-bezier(.2,.7,.2,1) both;
+}
+
+#engine .performance-scene-active .metric:nth-child(1){animation-delay:.25s}
+#engine .performance-scene-active .metric:nth-child(2){animation-delay:.38s}
+#engine .performance-scene-active .metric:nth-child(3){animation-delay:.51s}
+#engine .performance-scene-active .metric:nth-child(4){animation-delay:.64s}
+
+
+/* ===== TECHNICAL DISCLAIMER AS ITS OWN SCENE ===== */
+
+#engine .bottomNote{
+  position:relative;
+  margin-top:clamp(80px,12vw,150px);
+  padding:clamp(35px,6vw,80px) 0;
+  border-top:1px solid rgba(255,255,255,.10);
+
+  opacity:0;
+  transform:translateY(70px);
+  transition:
+    opacity 1s ease,
+    transform 1.1s cubic-bezier(.2,.7,.2,1);
+}
+
+#engine .bottomNote::before{
+  content:"03B / TECHNICAL NOTE";
+  display:block;
+  font-family:monospace;
+  font-size:10px;
+  letter-spacing:.24em;
+  color:rgba(255,255,255,.35);
+  margin-bottom:24px;
+}
+
+#engine .bottomNote::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:-1px;
+  width:0;
+  height:1px;
+  background:rgba(255,255,255,.55);
+  transition:width 1.4s cubic-bezier(.2,.7,.2,1);
+}
+
+#engine .bottomNote.bottom-note-active{
+  opacity:1;
+  transform:translateY(0);
+}
+
+#engine .bottomNote.bottom-note-active::after{
+  width:100%;
+}
+
+#engine .bottomNote.bottom-note-active{
+  animation:noteSceneIn 1.1s cubic-bezier(.2,.7,.2,1) both;
+}
+
+
+/* ===== KEYFRAMES ===== */
+
+@keyframes performanceTitleIn{
+  from{
+    opacity:0;
+    transform:translateY(45px);
+    letter-spacing:.08em;
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+    letter-spacing:normal;
+  }
+}
+
+@keyframes performanceTextIn{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@keyframes performanceMetricIn{
+  from{
+    opacity:0;
+    transform:translateY(35px) scale(.96);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+@keyframes noteSceneIn{
+  from{
+    letter-spacing:.02em;
+  }
+  to{
+    letter-spacing:normal;
+  }
+}
+
+@media(max-width:700px){
+
+  #engine .bottomNote{
+    margin-top:90px;
+    padding:40px 0 60px;
+  }
+
+  #engine .bottomNote::before{
+    margin-bottom:18px;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  #engine .bottomNote,
+  #engine .performance::before,
+  #engine .performance-scene-active h2,
+  #engine .performance-scene-active p,
+  #engine .performance-scene-active .metric{
+    animation:none !important;
+    transition:none !important;
+    opacity:1 !important;
+    transform:none !important;
+  }
+
+}
+
+</style>
+
+<script id="performance-note-cinematic-js">
+(function(){
+
+  const note = document.querySelector('#engine .bottomNote');
+
+  if(!note) return;
+
+  const observer = new IntersectionObserver(function(entries){
+
+    entries.forEach(function(entry){
+
+      if(entry.isIntersecting){
+        note.classList.add('bottom-note-active');
+      }
+
+    });
+
+  },{
+    threshold:0.30,
+    rootMargin:'-8% 0 -18% 0'
+  });
+
+  observer.observe(note);
+
+})();
+</script>
+
+
+<style id="luxury-visual-system-01">
+
+/* =========================================================
+   LUXURY VISUAL SYSTEM 01
+   Premium automotive / cinematic atmosphere
+   ========================================================= */
+
+:root{
+  --lux-white:rgba(255,255,255,.94);
+  --lux-soft:rgba(255,255,255,.62);
+  --lux-muted:rgba(255,255,255,.34);
+  --lux-line:rgba(255,255,255,.10);
+  --lux-line-soft:rgba(255,255,255,.055);
+  --lux-black:#050608;
+}
+
+
+/* ---------- GLOBAL ATMOSPHERE ---------- */
+
+html{
+  background:#050608;
+  scroll-behavior:smooth;
+}
+
+body{
+  background:
+    radial-gradient(
+      circle at 50% 8%,
+      rgba(255,255,255,.045),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      #050608 0%,
+      #07090c 45%,
+      #050608 100%
+    );
+  color:var(--lux-white);
+}
+
+
+/* ---------- FINE FILM GRAIN ---------- */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  opacity:.035;
+
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+
+  mix-blend-mode:soft-light;
+}
+
+
+/* ---------- SUBTLE CINEMATIC VIGNETTE ---------- */
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:9997;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 42%,
+      rgba(0,0,0,.28) 100%
+    );
+}
+
+
+/* ---------- PREMIUM SECTION DIVIDERS ---------- */
+
+section{
+  position:relative;
+}
+
+section::after{
+  content:"";
+  position:absolute;
+  left:clamp(24px,6vw,100px);
+  right:clamp(24px,6vw,100px);
+  bottom:0;
+  height:1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.13),
+      transparent
+    );
+  opacity:.65;
+}
+
+
+/* ---------- HERO ATMOSPHERE ---------- */
+
+#hero{
+  position:relative;
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 42%,
+      rgba(120,140,165,.055),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      #030405 0%,
+      #080a0d 58%,
+      #050608 100%
+    );
+}
+
+
+/* cinematic light behind vehicle */
+
+#hero::before{
+  content:"";
+  position:absolute;
+  width:75%;
+  height:45%;
+  left:12.5%;
+  top:22%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(190,205,220,.075),
+      transparent 68%
+    );
+
+  filter:blur(18px);
+  pointer-events:none;
+}
+
+
+/* moving horizontal light */
+
+#hero::after{
+  content:"";
+  position:absolute;
+  left:-35%;
+  top:0;
+  width:18%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.035),
+      transparent
+    );
+
+  transform:skewX(-14deg);
+  animation:luxLightSweep 13s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes luxLightSweep{
+
+  0%,35%{
+    left:-35%;
+    opacity:0;
+  }
+
+  45%{
+    opacity:1;
+  }
+
+  65%{
+    left:120%;
+    opacity:0;
+  }
+
+  100%{
+    left:120%;
+    opacity:0;
+  }
+
+}
+
+
+/* ---------- HERO TEXT ---------- */
+
+#vigilText{
+  letter-spacing:.02em;
+}
+
+#vigilText .vigilNumber{
+  color:rgba(255,255,255,.38);
+  font-family:monospace;
+  letter-spacing:.25em;
+}
+
+#vigilText .vigilTextMain{
+  text-shadow:
+    0 0 30px rgba(255,255,255,.04);
+}
+
+#vigilText .vigilTextSub{
+  color:rgba(255,255,255,.48);
+  letter-spacing:.34em;
+}
+
+
+/* ---------- SECTION HEADINGS ---------- */
+
+.sectionHead{
+  position:relative;
+}
+
+.sectionHead::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:-24px;
+  width:44px;
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.65),
+      transparent
+    );
+}
+
+.sectionHead .eyebrow{
+  color:rgba(255,255,255,.38);
+  letter-spacing:.28em;
+}
+
+.sectionHead h1,
+.sectionHead h2{
+  text-shadow:
+    0 8px 35px rgba(0,0,0,.45);
+}
+
+
+/* ---------- ENGINE BACKGROUND ---------- */
+
+#engine{
+  background:
+    radial-gradient(
+      ellipse at 50% 15%,
+      rgba(120,140,160,.035),
+      transparent 40%
+    ),
+    #050608;
+}
+
+
+/* ---------- DIAGRAM PREMIUM SURFACE ---------- */
+
+#engine .diagramCard{
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.012)
+    );
+
+  border-color:rgba(255,255,255,.09);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 35px 100px rgba(0,0,0,.30);
+}
+
+
+/* ---------- INFO CARD ---------- */
+
+#engine .infoCard{
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.008)
+    );
+
+  border-color:rgba(255,255,255,.09);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 35px 100px rgba(0,0,0,.25);
+}
+
+
+/* ---------- PERFORMANCE ---------- */
+
+#engine .performance{
+  background:
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(255,255,255,.028),
+      transparent 68%
+    );
+}
+
+#engine .performance .metric{
+  border-color:rgba(255,255,255,.08);
+}
+
+#engine .performance .metric strong{
+  text-shadow:
+    0 0 35px rgba(255,255,255,.055);
+}
+
+
+/* ---------- BMW GROUP ---------- */
+
+.bmw-info-section{
+  background:
+    radial-gradient(
+      ellipse at 50% 10%,
+      rgba(130,145,165,.04),
+      transparent 42%
+    ),
+    #050608;
+}
+
+.bmw-info-inner{
+  position:relative;
+}
+
+.bmw-info-inner::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:70px;
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.6),
+      transparent
+    );
+}
+
+
+/* ---------- LOWER INFORMATION CARDS ---------- */
+
+.bmw-info-grid > div{
+  position:relative;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,255,255,.018),
+      transparent 65%
+    );
+
+  border-bottom-color:rgba(255,255,255,.075);
+}
+
+.bmw-info-grid > div::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-1px;
+  width:0;
+  height:1px;
+
+  background:rgba(255,255,255,.42);
+
+  transition:
+    width 1.2s cubic-bezier(.2,.7,.2,1);
+}
+
+.bmw-info-grid > div.lower-scene-active::after{
+  width:100%;
+}
+
+
+/* ---------- TECHNICAL LABELS ---------- */
+
+.bmw-info-section .label,
+.bmw-info-section small,
+.bmw-info-section .eyebrow{
+  color:rgba(255,255,255,.36);
+  letter-spacing:.24em;
+}
+
+
+/* ---------- SOURCE NOTE ---------- */
+
+.bmw-source-note{
+  color:rgba(255,255,255,.28);
+  letter-spacing:.18em;
+  font-family:monospace;
+}
+
+
+/* ---------- SELECTION ---------- */
+
+::selection{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+
+
+/* ---------- SCROLLBAR ---------- */
+
+::-webkit-scrollbar{
+  width:5px;
+}
+
+::-webkit-scrollbar-track{
+  background:#050608;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.18);
+  border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background:rgba(255,255,255,.34);
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+  body::before{
+    opacity:.025;
+  }
+
+  #hero::after{
+    animation-duration:17s;
+  }
+
+  section::after{
+    left:22px;
+    right:22px;
+  }
+
+  .sectionHead::before{
+    top:-18px;
+    width:34px;
+  }
+
+}
+
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media(prefers-reduced-motion:reduce){
+
+  #hero::after{
+    animation:none;
+  }
+
+}
+
+</style>
+
+<style id="luxury-lighting-02">
+
+/* ===== PREMIUM 3D LIGHT ATMOSPHERE ===== */
+
+#scene{
+  position:relative;
+  overflow:hidden;
+}
+
+#scene::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 42%,
+      rgba(255,255,255,.045),
+      transparent 35%
+    );
+
+  mix-blend-mode:screen;
+}
+
+#scene::after{
+  content:"";
+  position:absolute;
+  top:-20%;
+  left:-55%;
+  width:32%;
+  height:140%;
+
+  pointer-events:none;
+  z-index:3;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,.025) 38%,
+      rgba(255,255,255,.085) 50%,
+      rgba(255,255,255,.025) 62%,
+      transparent 100%
+    );
+
+  transform:skewX(-14deg);
+  opacity:0;
+
+  animation:carStudioSweep 11s ease-in-out infinite;
+}
+
+@keyframes carStudioSweep{
+
+  0%,30%{
+    left:-55%;
+    opacity:0;
+  }
+
+  38%{
+    opacity:.7;
+  }
+
+  58%{
+    left:120%;
+    opacity:.55;
+  }
+
+  68%,100%{
+    left:120%;
+    opacity:0;
+  }
+
+}
+
+
+/* ===== PREMIUM FLOOR LIGHT ===== */
+
+#scene{
+  background:
+    radial-gradient(
+      ellipse at 50% 76%,
+      rgba(150,165,185,.035),
+      transparent 42%
+    );
+}
+
+
+/* ===== LOADING SCREEN ===== */
+
+#loading{
+  background:#040506 !important;
+  backdrop-filter:blur(18px);
+}
+
+#loadingText{
+  font-family:monospace;
+  letter-spacing:.24em;
+  font-size:10px;
+}
+
+#progressBar{
+  box-shadow:
+    0 0 14px rgba(255,255,255,.22);
+}
+
+
+/* ===== VEHICLE CONTROLS ===== */
+
+.ctrl{
+  position:relative;
+  transition:
+    color .35s ease,
+    border-color .35s ease,
+    background .35s ease,
+    transform .35s cubic-bezier(.2,.7,.2,1);
+}
+
+.ctrl::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-1px;
+  width:0;
+  height:1px;
+  background:rgba(255,255,255,.75);
+  transform:translateX(-50%);
+  transition:width .4s ease;
+}
+
+.ctrl:hover{
+  transform:translateY(-2px);
+}
+
+.ctrl:hover::after,
+.ctrl.active::after{
+  width:65%;
+}
+
+.ctrl.active{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 10px 30px rgba(0,0,0,.18);
+}
+
+
+/* ===== MOBILE ===== */
+
+@media(max-width:700px){
+
+  #scene::after{
+    width:45%;
+    animation-duration:14s;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  #scene::after{
+    animation:none;
+    opacity:0;
+  }
+
+}
+
+</style>
+
+<script id="luxury-lighting-02-js">
+(function(){
+
+  /* -----------------------------------------
+     PREMIUM THREE.JS LIGHTING
+     ----------------------------------------- */
+
+  if(typeof THREE === 'undefined') return;
+
+  let luxuryLightReady = false;
+  let luxuryKey = null;
+  let luxuryRim = null;
+  let luxuryFill = null;
+
+  function installLuxuryLights(){
+
+    if(luxuryLightReady) return;
+
+    /*
+      Search the existing Three.js scene.
+      The original scene remains untouched.
+    */
+
+    if(typeof scene === 'undefined') return;
+
+    luxuryKey = new THREE.SpotLight(
+      0xffffff,
+      0,
+      80,
+      Math.PI / 5,
+      .72,
+      1.5
+    );
+
+    luxuryKey.position.set(
+      7,
+      8,
+      8
+    );
+
+    scene.add(luxuryKey);
+
+
+    luxuryRim = new THREE.SpotLight(
+      0xb8c8dc,
+      0,
+      70,
+      Math.PI / 4,
+      .8,
+      1.4
+    );
+
+    luxuryRim.position.set(
+      -8,
+      6,
+      -7
+    );
+
+    scene.add(luxuryRim);
+
+
+    luxuryFill = new THREE.PointLight(
+      0xdde7f2,
+      0,
+      35,
+      2
+    );
+
+    luxuryFill.position.set(
+      0,
+      3,
+      5
+    );
+
+    scene.add(luxuryFill);
+
+
+    luxuryLightReady = true;
+
+  }
+
+
+  function updateLuxuryLights(){
+
+    if(!luxuryLightReady || !car) return;
+
+    const time = performance.now() * .00035;
+
+    /*
+      Very slow movement.
+      The goal is a luxury studio reflection,
+      not a flashy animation.
+    */
+
+    luxuryKey.position.x =
+      7 + Math.sin(time) * 2.2;
+
+    luxuryKey.position.y =
+      8 + Math.sin(time * .7) * 1.0;
+
+    luxuryKey.position.z =
+      8 + Math.cos(time) * 2.0;
+
+
+    luxuryRim.position.x =
+      -8 + Math.cos(time * .65) * 2.0;
+
+    luxuryRim.position.y =
+      6 + Math.sin(time * .45) * 1.0;
+
+    luxuryRim.position.z =
+      -7 + Math.sin(time * .7) * 2.0;
+
+
+    luxuryFill.position.x =
+      Math.sin(time * .5) * 3;
+
+    luxuryFill.position.z =
+      5 + Math.cos(time * .5) * 2;
+
+
+    luxuryKey.lookAt(carCenter);
+    luxuryRim.lookAt(carCenter);
+
+
+    /*
+      Fade lighting according to scroll position.
+      Hero receives the strongest cinematic treatment.
+    */
+
+    const hero =
+      document.getElementById('hero');
+
+    let heroProgress = 0;
+
+    if(hero){
+
+      const rect = hero.getBoundingClientRect();
+
+      heroProgress =
+        Math.max(
+          0,
+          Math.min(
+            1,
+            -rect.top /
+            Math.max(
+              hero.offsetHeight - window.innerHeight,
+              1
+            )
+          )
+        );
+
+    }
+
+    const cinematicStrength =
+      1 - heroProgress * .35;
+
+
+    luxuryKey.intensity =
+      3.0 * cinematicStrength;
+
+    luxuryRim.intensity =
+      2.0 * cinematicStrength;
+
+    luxuryFill.intensity =
+      .55 * cinematicStrength;
+
+  }
+
+
+  /*
+    Wait until the existing Three.js code
+    has created scene/car.
+  */
+
+  const luxuryTimer =
+    setInterval(function(){
+
+      if(
+        typeof scene !== 'undefined' &&
+        typeof car !== 'undefined'
+      ){
+
+        installLuxuryLights();
+
+        clearInterval(luxuryTimer);
+
+      }
+
+    },250);
+
+
+  /*
+    Hook into the existing animation loop
+    without replacing it.
+  */
+
+  const originalRAF =
+    window.requestAnimationFrame;
+
+  let lastLuxuryFrame = 0;
+
+  function luxuryFrame(now){
+
+    if(now - lastLuxuryFrame > 30){
+
+      updateLuxuryLights();
+
+      lastLuxuryFrame = now;
+
+    }
+
+    originalRAF(luxuryFrame);
+
+  }
+
+
+  /*
+    Don't replace the global RAF.
+    Instead use a lightweight independent loop.
+  */
+
+  function luxuryLoop(){
+
+    updateLuxuryLights();
+
+    originalRAF(luxuryLoop);
+
+  }
+
+  originalRAF(luxuryLoop);
+
+
+})();
+</script>
+
+
+<style id="luxury-detail-03">
+
+/* =========================================================
+   LUXURY DETAIL 03 — AUTOMOTIVE HUD
+   ========================================================= */
+
+#hero{
+  --hud-line:rgba(255,255,255,.13);
+  --hud-soft:rgba(255,255,255,.42);
+}
+
+
+/* ---------- PREMIUM HUD CORNERS ---------- */
+
+#hero::before{
+  z-index:1;
+}
+
+#hero .luxHud{
+  position:absolute;
+  inset:0;
+  z-index:8;
+  pointer-events:none;
+  font-family:monospace;
+  color:rgba(255,255,255,.42);
+  font-size:9px;
+  letter-spacing:.18em;
+}
+
+.luxHud .hudTopLeft,
+.luxHud .hudTopRight,
+.luxHud .hudBottomLeft,
+.luxHud .hudBottomRight{
+  position:absolute;
+}
+
+.luxHud .hudTopLeft{
+  top:32px;
+  left:clamp(22px,4vw,65px);
+}
+
+.luxHud .hudTopRight{
+  top:32px;
+  right:clamp(22px,4vw,65px);
+  text-align:right;
+}
+
+.luxHud .hudBottomLeft{
+  bottom:34px;
+  left:clamp(22px,4vw,65px);
+}
+
+.luxHud .hudBottomRight{
+  bottom:34px;
+  right:clamp(22px,4vw,65px);
+  text-align:right;
+}
+
+.luxHud .hudLine{
+  display:block;
+  width:36px;
+  height:1px;
+  margin-bottom:8px;
+  background:rgba(255,255,255,.35);
+}
+
+.luxHud .hudValue{
+  color:rgba(255,255,255,.68);
+}
+
+.luxHud .hudMuted{
+  color:rgba(255,255,255,.25);
+}
+
+
+/* ---------- VIEW INDICATOR ---------- */
+
+#luxViewIndicator{
+  position:absolute;
+  right:clamp(22px,5vw,80px);
+  top:50%;
+  z-index:12;
+
+  transform:translateY(-50%);
+
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:7px;
+
+  pointer-events:none;
+  font-family:monospace;
+}
+
+#luxViewIndicator span{
+  display:block;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:rgba(255,255,255,.20);
+
+  transition:
+    transform .4s ease,
+    background .4s ease,
+    box-shadow .4s ease;
+}
+
+#luxViewIndicator span.active{
+  transform:scale(1.8);
+  background:rgba(255,255,255,.9);
+  box-shadow:0 0 12px rgba(255,255,255,.35);
+}
+
+
+/* ---------- VIEW LABEL ---------- */
+
+#luxViewLabel{
+  position:absolute;
+  right:clamp(35px,7vw,105px);
+  top:calc(50% + 30px);
+  z-index:12;
+
+  color:rgba(255,255,255,.32);
+  font-family:monospace;
+  font-size:8px;
+  letter-spacing:.22em;
+
+  pointer-events:none;
+
+  transition:
+    opacity .4s ease,
+    transform .4s ease;
+}
+
+
+/* ---------- PREMIUM CONTROL BAR ---------- */
+
+#hero .controls,
+#hero .control-bar,
+#hero .view-controls{
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+
+
+/* ---------- BUTTON DETAILS ---------- */
+
+.ctrl{
+  overflow:hidden;
+}
+
+.ctrl::before{
+  content:"";
+  position:absolute;
+  left:-100%;
+  top:0;
+  width:100%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.055),
+      transparent
+    );
+
+  transition:left .7s ease;
+  pointer-events:none;
+}
+
+.ctrl:hover::before{
+  left:100%;
+}
+
+
+/* ---------- TOUCH FEEDBACK ---------- */
+
+.ctrl:active{
+  transform:scale(.97);
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+  .luxHud{
+    font-size:8px !important;
+  }
+
+  .luxHud .hudTopLeft{
+    top:20px;
+    left:18px;
+  }
+
+  .luxHud .hudTopRight{
+    top:20px;
+    right:18px;
+  }
+
+  .luxHud .hudBottomLeft{
+    bottom:20px;
+    left:18px;
+  }
+
+  .luxHud .hudBottomRight{
+    bottom:20px;
+    right:18px;
+  }
+
+  #luxViewIndicator{
+    right:17px;
+  }
+
+  #luxViewLabel{
+    right:30px;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  .ctrl::before{
+    display:none;
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-detail-03-js">
+(function(){
+
+  const hero = document.getElementById('hero');
+
+  if(!hero) return;
+
+  /* ---------- HUD ---------- */
+
+  const hud = document.createElement('div');
+
+  hud.className = 'luxHud';
+
+  hud.innerHTML = `
+    <div class="hudTopLeft">
+      <span class="hudLine"></span>
+      BMW / VEHICLE SYSTEM
+    </div>
+
+    <div class="hudTopRight">
+      <span class="hudLine" style="margin-left:auto"></span>
+      <span class="hudValue">01</span>
+      / EXPERIENCE
+    </div>
+
+    <div class="hudBottomLeft">
+      <span class="hudMuted">INTERFACE</span><br>
+      <span class="hudValue">ACTIVE</span>
+    </div>
+
+    <div class="hudBottomRight">
+      <span class="hudMuted">MODE</span><br>
+      <span class="hudValue" id="luxModeValue">CINEMATIC</span>
+    </div>
+  `;
+
+  hero.appendChild(hud);
+
+
+  /* ---------- VIEW DOTS ---------- */
+
+  const indicator =
+    document.createElement('div');
+
+  indicator.id = 'luxViewIndicator';
+
+  indicator.innerHTML = `
+    <span data-lux-view="front" class="active"></span>
+    <span data-lux-view="side"></span>
+    <span data-lux-view="rear"></span>
+    <span data-lux-view="interior"></span>
+    <span data-lux-view="cinematic"></span>
+  `;
+
+  hero.appendChild(indicator);
+
+
+  /* ---------- VIEW LABEL ---------- */
+
+  const label =
+    document.createElement('div');
+
+  label.id = 'luxViewLabel';
+
+  label.textContent =
+    'FRONT VIEW';
+
+  hero.appendChild(label);
+
+
+  const labels = {
+    front:'FRONT VIEW',
+    side:'SIDE PROFILE',
+    rear:'REAR VIEW',
+    interior:'INTERIOR VIEW',
+    cinematic:'CINEMATIC VIEW',
+    reset:'SYSTEM RESET'
+  };
+
+
+  function updateIndicator(view){
+
+    indicator
+      .querySelectorAll('span')
+      .forEach(function(dot){
+
+        dot.classList.toggle(
+          'active',
+          dot.dataset.luxView === view
+        );
+
+      });
+
+    label.textContent =
+      labels[view] || 'VEHICLE VIEW';
+
+    const mode =
+      document.getElementById('luxModeValue');
+
+    if(mode){
+
+      mode.textContent =
+        view === 'cinematic'
+          ? 'CINEMATIC'
+          : view === 'interior'
+            ? 'INTERIOR'
+            : 'EXPLORATION';
+
+    }
+
+  }
+
+
+  /*
+    Connect to the existing .ctrl buttons.
+    The original click behavior remains active.
+  */
+
+  document
+    .querySelectorAll('.ctrl')
+    .forEach(function(button){
+
+      button.addEventListener(
+        'click',
+        function(){
+
+          updateIndicator(
+            button.dataset.view
+          );
+
+        }
+      );
+
+    });
+
+
+  /* ---------- SCROLL HUD ---------- */
+
+  function updateHUD(){
+
+    const rect =
+      hero.getBoundingClientRect();
+
+    const progress =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          -rect.top /
+          Math.max(
+            hero.offsetHeight -
+            window.innerHeight,
+            1
+          )
+        )
+      );
+
+    /*
+      Subtle HUD fade during cinematic
+      scroll transition.
+    */
+
+    hud.style.opacity =
+      String(.45 + (1 - progress) * .55);
+
+    indicator.style.opacity =
+      String(.55 + (1 - progress) * .45);
+
+  }
+
+
+  window.addEventListener(
+    'scroll',
+    updateHUD,
+    {passive:true}
+  );
+
+  updateHUD();
+
+
+})();
+</script>
+
+
+
+
+
+<style id="luxury-interaction-05">
+
+/* =========================================================
+   LUXURY INTERACTION 05
+   SYSTEM 02 / POWERTRAIN INTERFACE
+   ========================================================= */
+
+#engine .diagramCard{
+  position:relative;
+  overflow:hidden;
+}
+
+#engine .diagramCard::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:1px;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.55),
+    transparent
+  );
+
+  transform:translateX(-100%);
+  opacity:0;
+}
+
+#engine .diagramCard.engine-scene-active::before{
+  animation:
+    luxDiagramScan 2.4s 0.4s cubic-bezier(.2,.7,.2,1) forwards;
+}
+
+@keyframes luxDiagramScan{
+  0%{
+    transform:translateX(-100%);
+    opacity:0;
+  }
+
+  15%{
+    opacity:1;
+  }
+
+  100%{
+    transform:translateX(100%);
+    opacity:0;
+  }
+}
+
+
+/* ---------- SYSTEM LABEL ---------- */
+
+#engine .diagramCard .luxSystemLabel{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:18px;
+
+  font-family:monospace;
+  font-size:8px;
+  letter-spacing:.2em;
+  color:rgba(255,255,255,.30);
+}
+
+#engine .diagramCard .luxSystemStatus{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+#engine .diagramCard .luxSystemStatus i{
+  display:block;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(255,255,255,.7);
+
+  box-shadow:
+    0 0 10px rgba(255,255,255,.35);
+
+  animation:luxSystemPulse 2s ease-in-out infinite;
+}
+
+@keyframes luxSystemPulse{
+  0%,100%{
+    opacity:.35;
+  }
+
+  50%{
+    opacity:1;
+  }
+}
+
+
+/* ---------- INFO CARD ---------- */
+
+#engine .infoCard{
+  position:relative;
+  overflow:hidden;
+}
+
+#engine .infoCard::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:2px;
+  height:0;
+
+  background:rgba(255,255,255,.65);
+
+  transition:
+    height 1.1s cubic-bezier(.2,.7,.2,1);
+}
+
+#engine .infoCard.engine-info-active::before{
+  height:100%;
+}
+
+
+/* ---------- LIVE DATA HEADER ---------- */
+
+#engine .infoCard .luxLiveHeader{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  margin-bottom:24px;
+
+  font-family:monospace;
+  font-size:8px;
+  letter-spacing:.2em;
+
+  color:rgba(255,255,255,.28);
+}
+
+#engine .infoCard .luxLiveHeader span{
+  width:30px;
+  height:1px;
+  background:rgba(255,255,255,.3);
+}
+
+
+/* ---------- DATA ROWS ---------- */
+
+#engine .infoCard .spec{
+  position:relative;
+  transition:
+    background .4s ease,
+    padding-left .4s ease;
+}
+
+#engine .infoCard.engine-info-active .spec{
+  animation:luxSpecReveal .75s cubic-bezier(.2,.7,.2,1) both;
+}
+
+#engine .infoCard.engine-info-active .spec:nth-child(1){
+  animation-delay:.25s;
+}
+
+#engine .infoCard.engine-info-active .spec:nth-child(2){
+  animation-delay:.38s;
+}
+
+#engine .infoCard.engine-info-active .spec:nth-child(3){
+  animation-delay:.51s;
+}
+
+@keyframes luxSpecReveal{
+  from{
+    opacity:0;
+    transform:translateX(20px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateX(0);
+  }
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+  #engine .diagramCard .luxSystemLabel{
+    font-size:7px;
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-interaction-05-js">
+(function(){
+
+  const diagram =
+    document.querySelector('#engine .diagramCard');
+
+  const info =
+    document.querySelector('#engine .infoCard');
+
+  if(!diagram || !info) return;
+
+
+  /* ---------- SYSTEM HEADER ---------- */
+
+  if(!diagram.querySelector('.luxSystemLabel')){
+
+    const label =
+      document.createElement('div');
+
+    label.className =
+      'luxSystemLabel';
+
+    label.innerHTML = `
+      <span>POWERTRAIN ARCHITECTURE / SYSTEM 02</span>
+      <span class="luxSystemStatus">
+        <i></i>
+        SYSTEM ACTIVE
+      </span>
+    `;
+
+    /*
+      Insert before the existing diagram heading.
+    */
+
+    diagram.insertBefore(
+      label,
+      diagram.firstChild
+    );
+
+  }
+
+
+  /* ---------- LIVE DATA HEADER ---------- */
+
+  if(!info.querySelector('.luxLiveHeader')){
+
+    const header =
+      document.createElement('div');
+
+    header.className =
+      'luxLiveHeader';
+
+    header.innerHTML =
+      '<span></span> LIVE SYSTEM DATA';
+
+    info.insertBefore(
+      header,
+      info.firstChild
+    );
+
+  }
+
+
+  /* ---------- SVG NODE ENHANCEMENT ---------- */
+
+  const svg =
+    diagram.querySelector('svg');
+
+  if(svg){
+
+    const shapes =
+      svg.querySelectorAll(
+        'circle, rect, path, polygon'
+      );
+
+    shapes.forEach(function(shape,index){
+
+      shape.style.transition =
+        'filter .4s ease, opacity .4s ease';
+
+      /*
+        Only subtle emphasis.
+        Existing SVG geometry remains untouched.
+      */
+
+      if(index < 20){
+
+        shape.addEventListener(
+          'mouseenter',
+          function(){
+
+            shape.style.filter =
+              'drop-shadow(0 0 5px rgba(255,255,255,.28))';
+
+          }
+        );
+
+        shape.addEventListener(
+          'mouseleave',
+          function(){
+
+            shape.style.filter =
+              '';
+
+          }
+        );
+
+      }
+
+    });
+
+  }
+
+
+  /* ---------- SYSTEM ACTIVE OBSERVER ---------- */
+
+  const observer =
+    new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(entry.isIntersecting){
+
+            diagram.classList.add(
+              'engine-scene-active'
+            );
+
+            setTimeout(function(){
+
+              info.classList.add(
+                'engine-info-active'
+              );
+
+            },420);
+
+            observer.unobserve(
+              entry.target
+            );
+
+          }
+
+        });
+
+      },
+      {
+        threshold:.30,
+        rootMargin:'-8% 0 -18% 0'
+      }
+    );
+
+  observer.observe(diagram);
+
+})();
+</script>
+
+
+<style id="luxury-interaction-06">
+
+/* =========================================================
+   LUXURY INTERACTION 06
+   BMW GROUP — EDITORIAL SCENE SYSTEM
+   ========================================================= */
+
+.bmw-info-grid > div{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+
+  min-height:clamp(300px,42vh,500px);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  padding:
+    clamp(45px,7vw,90px)
+    clamp(24px,6vw,90px);
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(255,255,255,.018),
+      transparent 58%
+    );
+
+  transition:
+    background .8s ease,
+    border-color .8s ease;
+}
+
+
+/* ---------- LARGE SCENE NUMBER ---------- */
+
+.bmw-info-grid > div::before{
+  content:"";
+  position:absolute;
+
+  right:clamp(20px,5vw,80px);
+  top:50%;
+  transform:translateY(-50%);
+
+  font-family:Arial,sans-serif;
+  font-size:clamp(90px,15vw,220px);
+  font-weight:700;
+  line-height:1;
+
+  color:rgba(255,255,255,.018);
+
+  pointer-events:none;
+
+  transition:
+    color 1s ease,
+    transform 1s cubic-bezier(.2,.7,.2,1);
+}
+
+.bmw-info-grid > div:nth-child(1)::before{
+  content:"01";
+}
+
+.bmw-info-grid > div:nth-child(2)::before{
+  content:"02";
+}
+
+.bmw-info-grid > div:nth-child(3)::before{
+  content:"03";
+}
+
+
+/* ---------- CONTENT ---------- */
+
+.bmw-info-grid > div > *{
+  position:relative;
+  z-index:2;
+}
+
+
+/* ---------- SCENE LABEL ---------- */
+
+.bmw-info-grid > div::after{
+  content:"";
+
+  position:absolute;
+  left:0;
+  top:0;
+
+  width:0;
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.6),
+      transparent
+    );
+
+  transition:
+    width 1.2s cubic-bezier(.2,.7,.2,1);
+}
+
+
+/* ---------- ACTIVE SCENE ---------- */
+
+.bmw-info-grid > div.lower-scene-active{
+  background:
+    radial-gradient(
+      ellipse at 15% 50%,
+      rgba(255,255,255,.035),
+      transparent 55%
+    ),
+    linear-gradient(
+      105deg,
+      rgba(255,255,255,.025),
+      transparent 65%
+    );
+}
+
+.bmw-info-grid > div.lower-scene-active::before{
+  color:rgba(255,255,255,.035);
+  transform:
+    translateY(-50%)
+    translateX(-10px);
+}
+
+.bmw-info-grid > div.lower-scene-active::after{
+  width:100%;
+}
+
+
+/* ---------- HEADING ---------- */
+
+.bmw-info-grid > div h3{
+  position:relative;
+
+  font-size:clamp(25px,4vw,54px);
+  line-height:.95;
+  letter-spacing:-.035em;
+
+  margin-bottom:24px;
+
+  transform:translateY(35px);
+  opacity:0;
+
+  transition:
+    opacity .9s ease,
+    transform 1s cubic-bezier(.2,.7,.2,1);
+}
+
+.bmw-info-grid > div.lower-scene-active h3{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+/* ---------- PARAGRAPH ---------- */
+
+.bmw-info-grid > div p{
+  max-width:620px;
+
+  color:rgba(255,255,255,.48);
+
+  line-height:1.8;
+
+  transform:translateY(25px);
+  opacity:0;
+
+  transition:
+    opacity .9s .16s ease,
+    transform 1s .16s cubic-bezier(.2,.7,.2,1);
+}
+
+.bmw-info-grid > div.lower-scene-active p{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+/* ---------- TECHNICAL INDEX ---------- */
+
+.bmw-info-grid > div .luxSceneIndex{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  margin-bottom:22px;
+
+  font-family:monospace;
+  font-size:8px;
+  letter-spacing:.22em;
+
+  color:rgba(255,255,255,.28);
+
+  opacity:0;
+  transform:translateY(15px);
+
+  transition:
+    opacity .7s ease,
+    transform .7s ease;
+}
+
+.bmw-info-grid > div.lower-scene-active .luxSceneIndex{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.bmw-info-grid > div .luxSceneIndex i{
+  display:block;
+  width:32px;
+  height:1px;
+  background:rgba(255,255,255,.35);
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+  .bmw-info-grid > div{
+    min-height:340px;
+  }
+
+  .bmw-info-grid > div::before{
+    right:12px;
+    font-size:100px;
+  }
+
+  .bmw-info-grid > div h3{
+    font-size:32px;
+  }
+
+}
+
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media(prefers-reduced-motion:reduce){
+
+  .bmw-info-grid > div h3,
+  .bmw-info-grid > div p,
+  .bmw-info-grid > div .luxSceneIndex{
+    opacity:1;
+    transform:none;
+    transition:none;
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-interaction-06-js">
+(function(){
+
+  const grid =
+    document.querySelector('.bmw-info-grid');
+
+  if(!grid) return;
+
+  const scenes =
+    Array.from(grid.children);
+
+  if(!scenes.length) return;
+
+
+  /* ---------- ADD SCENE INDEX ---------- */
+
+  scenes.forEach(function(scene,index){
+
+    if(scene.querySelector('.luxSceneIndex')){
+      return;
+    }
+
+    const indexLabel =
+      document.createElement('div');
+
+    indexLabel.className =
+      'luxSceneIndex';
+
+    const number =
+      String(index + 1).padStart(2,'0');
+
+    const names = [
+      'DESIGN / FORM LANGUAGE',
+      'TECHNOLOGY / DIGITAL SYSTEMS',
+      'ELECTROMOBILITY / FUTURE MOBILITY'
+    ];
+
+    indexLabel.innerHTML =
+      '<i></i>' +
+      (names[index] ||
+       'BMW GROUP / EXPERIENCE');
+
+    /*
+      Put technical index before heading.
+    */
+
+    scene.insertBefore(
+      indexLabel,
+      scene.firstChild
+    );
+
+  });
+
+
+  /* ---------- SEQUENTIAL OBSERVER ---------- */
+
+  const observer =
+    new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(!entry.isIntersecting){
+            return;
+          }
+
+          const scene =
+            entry.target;
+
+          const index =
+            scenes.indexOf(scene);
+
+          /*
+            Slight delay based on scene order.
+          */
+
+          setTimeout(function(){
+
+            scene.classList.add(
+              'lower-scene-active'
+            );
+
+          },Math.max(index,0) * 90);
+
+          observer.unobserve(scene);
+
+        });
+
+      },
+      {
+        threshold:.32,
+        rootMargin:'-10% 0 -20% 0'
+      }
+    );
+
+
+  scenes.forEach(function(scene){
+
+    observer.observe(scene);
+
+  });
+
+})();
+</script>
+
+
+<style id="luxury-interaction-07">
+
+/* =========================================================
+   LUXURY INTERACTION 07
+   SUBTLE LIGHT / POINTER INTERACTION
+   ========================================================= */
+
+#luxPointerGlow{
+  position:fixed;
+  left:0;
+  top:0;
+
+  width:260px;
+  height:260px;
+
+  border-radius:50%;
+
+  pointer-events:none;
+  z-index:9996;
+
+  transform:
+    translate3d(-50%,-50%,0);
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,255,255,.045) 0%,
+      rgba(255,255,255,.018) 25%,
+      transparent 68%
+    );
+
+  filter:blur(4px);
+
+  opacity:0;
+
+  transition:
+    opacity .5s ease;
+}
+
+body.lux-pointer-active #luxPointerGlow{
+  opacity:1;
+}
+
+
+/* ---------- SMALL POINTER CORE ---------- */
+
+#luxPointerCore{
+  position:fixed;
+  left:0;
+  top:0;
+
+  width:4px;
+  height:4px;
+
+  border-radius:50%;
+
+  pointer-events:none;
+  z-index:9999;
+
+  transform:
+    translate3d(-50%,-50%,0);
+
+  background:rgba(255,255,255,.75);
+
+  box-shadow:
+    0 0 12px rgba(255,255,255,.35);
+
+  opacity:0;
+
+  transition:
+    opacity .3s ease,
+    transform .25s ease;
+}
+
+body.lux-pointer-active #luxPointerCore{
+  opacity:.8;
+}
+
+
+/* ---------- INTERACTIVE TARGET ---------- */
+
+.lux-interactive-target{
+  transition:
+    letter-spacing .4s ease,
+    opacity .4s ease;
+}
+
+.lux-interactive-target.lux-hovering{
+  opacity:.82;
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+  #luxPointerGlow,
+  #luxPointerCore{
+    display:none;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  #luxPointerGlow,
+  #luxPointerCore{
+    display:none;
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-interaction-07-js">
+(function(){
+
+  /*
+    Don't run pointer effects on touch-only devices.
+  */
+
+  if(
+    !window.matchMedia ||
+    !window.matchMedia('(pointer:fine)').matches
+  ){
+    return;
+  }
+
+
+  const glow =
+    document.createElement('div');
+
+  glow.id =
+    'luxPointerGlow';
+
+
+  const core =
+    document.createElement('div');
+
+  core.id =
+    'luxPointerCore';
+
+
+  document.body.appendChild(glow);
+  document.body.appendChild(core);
+
+
+  let mouseX = 0;
+  let mouseY = 0;
+
+  let glowX = 0;
+  let glowY = 0;
+
+  let coreX = 0;
+  let coreY = 0;
+
+
+  /* ---------- POINTER ---------- */
+
+  window.addEventListener(
+    'pointermove',
+    function(event){
+
+      mouseX =
+        event.clientX;
+
+      mouseY =
+        event.clientY;
+
+      document.body.classList.add(
+        'lux-pointer-active'
+      );
+
+    },
+    {passive:true}
+  );
+
+
+  window.addEventListener(
+    'pointerleave',
+    function(){
+
+      document.body.classList.remove(
+        'lux-pointer-active'
+      );
+
+    },
+    {passive:true}
+  );
+
+
+  /* ---------- SMOOTH FOLLOW ---------- */
+
+  function animatePointer(){
+
+    glowX +=
+      (mouseX - glowX) * .075;
+
+    glowY +=
+      (mouseY - glowY) * .075;
+
+    coreX +=
+      (mouseX - coreX) * .22;
+
+    coreY +=
+      (mouseY - coreY) * .22;
+
+
+    glow.style.transform =
+      'translate3d(' +
+      glowX +
+      'px,' +
+      glowY +
+      'px,0) translate(-50%,-50%)';
+
+
+    core.style.transform =
+      'translate3d(' +
+      coreX +
+      'px,' +
+      coreY +
+      'px,0) translate(-50%,-50%)';
+
+
+    requestAnimationFrame(
+      animatePointer
+    );
+
+  }
+
+  animatePointer();
+
+
+  /* ---------- INTERACTIVE ELEMENTS ---------- */
+
+  const targets =
+    document.querySelectorAll(
+      'button, .ctrl, a, [data-view], .diagramCard svg'
+    );
+
+
+  targets.forEach(function(target){
+
+    target.classList.add(
+      'lux-interactive-target'
+    );
+
+
+    target.addEventListener(
+      'pointerenter',
+      function(){
+
+        target.classList.add(
+          'lux-hovering'
+        );
+
+        core.style.transform +=
+          ' scale(1.8)';
+
+      }
+    );
+
+
+    target.addEventListener(
+      'pointerleave',
+      function(){
+
+        target.classList.remove(
+          'lux-hovering'
+        );
+
+      }
+    );
+
+  });
+
+})();
+</script>
+
+
+<style id="luxury-interaction-08">
+
+/* =========================================================
+   LUXURY INTERACTION 08
+   CINEMATIC SECTION PROGRESS RAIL
+   ========================================================= */
+
+#luxSceneRail{
+  position:fixed;
+  left:clamp(14px,3vw,42px);
+  top:50%;
+
+  transform:translateY(-50%);
+
+  z-index:9990;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+
+  pointer-events:none;
+
+  opacity:0;
+  transition:opacity .6s ease;
+}
+
+body.lux-rail-visible #luxSceneRail{
+  opacity:1;
+}
+
+
+.luxRailItem{
+  position:relative;
+
+  width:28px;
+  height:28px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:monospace;
+  font-size:8px;
+  letter-spacing:.08em;
+
+  color:rgba(255,255,255,.22);
+
+  transition:
+    color .5s ease,
+    transform .5s ease;
+}
+
+
+.luxRailItem::before{
+  content:"";
+
+  position:absolute;
+  left:50%;
+
+  width:1px;
+  height:1px;
+
+  border-radius:50%;
+
+  background:rgba(255,255,255,.35);
+
+  transform:translateX(-50%);
+
+  transition:
+    width .5s ease,
+    height .5s ease,
+    background .5s ease;
+}
+
+
+.luxRailItem span{
+  opacity:0;
+
+  transition:
+    opacity .4s ease;
+}
+
+
+.luxRailItem.active{
+  color:rgba(255,255,255,.8);
+  transform:translateX(2px);
+}
+
+
+.luxRailItem.active::before{
+  width:6px;
+  height:6px;
+
+  background:rgba(255,255,255,.85);
+}
+
+
+.luxRailItem.active span{
+  opacity:1;
+}
+
+
+/* connecting line */
+
+#luxSceneRail::before{
+  content:"";
+
+  position:absolute;
+
+  left:50%;
+  top:14px;
+  bottom:14px;
+
+  width:1px;
+
+  transform:translateX(-50%);
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255,255,255,.13) 15%,
+      rgba(255,255,255,.13) 85%,
+      transparent
+    );
+
+  z-index:-1;
+}
+
+
+/* progress fill */
+
+#luxRailProgress{
+  position:absolute;
+
+  left:50%;
+  top:14px;
+
+  width:1px;
+  height:0;
+
+  transform:translateX(-50%);
+
+  background:rgba(255,255,255,.65);
+
+  transition:
+    height .6s cubic-bezier(.2,.7,.2,1);
+
+  z-index:-1;
+}
+
+
+/* mobile */
+
+@media(max-width:700px){
+
+  #luxSceneRail{
+    left:8px;
+    transform:
+      translateY(-50%)
+      scale(.78);
+    transform-origin:left center;
+  }
+
+}
+
+@media(max-width:480px){
+
+  #luxSceneRail{
+    left:4px;
+    transform:
+      translateY(-50%)
+      scale(.65);
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-interaction-08-js">
+(function(){
+
+  /* ---------- BUILD RAIL ---------- */
+
+  const rail =
+    document.createElement('div');
+
+  rail.id =
+    'luxSceneRail';
+
+
+  const progress =
+    document.createElement('div');
+
+  progress.id =
+    'luxRailProgress';
+
+  rail.appendChild(progress);
+
+
+  const items = [
+    ['01','MACHINE'],
+    ['02','POWERTRAIN'],
+    ['03','PERFORMANCE'],
+    ['04','BMW GROUP']
+  ];
+
+
+  items.forEach(function(item,index){
+
+    const element =
+      document.createElement('div');
+
+    element.className =
+      'luxRailItem';
+
+    element.dataset.index =
+      String(index);
+
+    element.innerHTML =
+      '<span>' +
+      item[0] +
+      '</span>';
+
+
+    rail.appendChild(element);
+
+  });
+
+
+  document.body.appendChild(rail);
+
+
+  const railItems =
+    Array.from(
+      rail.querySelectorAll(
+        '.luxRailItem'
+      )
+    );
+
+
+  /* ---------- FIND REAL SECTIONS ---------- */
+
+  const hero =
+    document.getElementById('hero');
+
+  const engine =
+    document.getElementById('engine');
+
+  const bmw =
+    document.querySelector(
+      '.bmw-info-section'
+    );
+
+
+  const sections = [
+    hero,
+    engine,
+    bmw
+  ].filter(Boolean);
+
+
+  if(!sections.length){
+    return;
+  }
+
+
+  /* ---------- ACTIVE SCENE ---------- */
+
+  function updateRail(){
+
+    const viewportPoint =
+      window.innerHeight * .42;
+
+    let activeIndex = 0;
+
+
+    sections.forEach(
+      function(section,index){
+
+        const rect =
+          section.getBoundingClientRect();
+
+        if(
+          rect.top <= viewportPoint &&
+          rect.bottom > viewportPoint
+        ){
+          activeIndex = index;
+        }
+
+      }
+    );
+
+
+    /*
+      Map actual page sections into
+      cinematic rail states.
+    */
+
+    if(
+      engine &&
+      sections.includes(engine)
+    ){
+
+      const rect =
+        engine.getBoundingClientRect();
+
+      if(
+        rect.top <= viewportPoint &&
+        rect.bottom > viewportPoint
+      ){
+
+        const engineHeight =
+          Math.max(
+            engine.offsetHeight,
+            window.innerHeight
+          );
+
+        const progressInside =
+          Math.max(
+            0,
+            Math.min(
+              1,
+              (viewportPoint - rect.top) /
+              engineHeight
+            )
+          );
+
+
+        /*
+          02 POWERTRAIN
+          03 PERFORMANCE
+        */
+
+        if(progressInside > .62){
+          activeIndex = 2;
+        }else{
+          activeIndex = 1;
+        }
+
+      }
+
+    }
+
+
+    /*
+      BMW section = 04
+    */
+
+    if(
+      bmw &&
+      bmw.getBoundingClientRect().top
+      <= viewportPoint
+    ){
+
+      activeIndex = 3;
+
+    }
+
+
+    railItems.forEach(
+      function(item,index){
+
+        item.classList.toggle(
+          'active',
+          index === activeIndex
+        );
+
+      }
+    );
+
+
+    const denominator =
+      Math.max(
+        railItems.length - 1,
+        1
+      );
+
+    const railPercent =
+      (activeIndex / denominator) * 100;
+
+
+    progress.style.height =
+      railPercent + '%';
+
+
+    /*
+      Keep rail hidden near very top.
+    */
+
+    if(window.scrollY > 180){
+
+      document.body.classList.add(
+        'lux-rail-visible'
+      );
+
+    }else{
+
+      document.body.classList.remove(
+        'lux-rail-visible'
+      );
+
+    }
+
+  }
+
+
+  let ticking = false;
+
+
+  function requestRailUpdate(){
+
+    if(ticking) return;
+
+    ticking = true;
+
+
+    requestAnimationFrame(
+      function(){
+
+        updateRail();
+
+        ticking = false;
+
+      }
+    );
+
+  }
+
+
+  window.addEventListener(
+    'scroll',
+    requestRailUpdate,
+    {passive:true}
+  );
+
+
+  window.addEventListener(
+    'resize',
+    requestRailUpdate,
+    {passive:true}
+  );
+
+
+  updateRail();
+
+})();
+</script>
+
+
+<style id="luxury-interaction-09">
+
+/* =========================================================
+   LUXURY INTERACTION 09
+   CINEMATIC SIGNATURE / FINAL SCENE
+   ========================================================= */
+
+#luxSignature{
+  position:relative;
+
+  min-height:clamp(420px,70vh,760px);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:clamp(80px,12vw,160px) 7vw;
+
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255,255,255,.055),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(0,0,0,.28)
+    );
+
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+
+#luxSignature::before{
+  content:"";
+
+  position:absolute;
+
+  left:50%;
+  top:10%;
+
+  width:1px;
+  height:80%;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255,255,255,.18),
+      transparent
+    );
+
+  transform:translateX(-50%);
+
+  opacity:.45;
+}
+
+
+#luxSignature::after{
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+  top:50%;
+
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.12),
+      transparent
+    );
+
+  opacity:.4;
+}
+
+
+.luxSignatureInner{
+  position:relative;
+
+  width:min(900px,100%);
+
+  text-align:center;
+
+  z-index:2;
+}
+
+
+.luxSignatureEyebrow{
+  display:block;
+
+  margin-bottom:24px;
+
+  font-family:monospace;
+
+  font-size:10px;
+
+  letter-spacing:.28em;
+
+  color:rgba(255,255,255,.38);
+
+  opacity:0;
+
+  transform:translateY(18px);
+
+  transition:
+    opacity .8s ease,
+    transform .8s cubic-bezier(.2,.7,.2,1);
+}
+
+
+.luxSignatureTitle{
+  margin:0;
+
+  font-size:
+    clamp(
+      42px,
+      8vw,
+      112px
+    );
+
+  line-height:.9;
+
+  letter-spacing:-.065em;
+
+  font-weight:500;
+
+  color:#f5f5f5;
+
+  opacity:0;
+
+  transform:translateY(35px);
+
+  transition:
+    opacity 1s ease .12s,
+    transform 1s cubic-bezier(.2,.7,.2,1) .12s;
+}
+
+
+.luxSignatureTitle span{
+  display:block;
+
+  color:rgba(255,255,255,.28);
+}
+
+
+.luxSignatureLine{
+  width:0;
+
+  height:1px;
+
+  margin:34px auto 26px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.65),
+      transparent
+    );
+
+  transition:
+    width 1.1s cubic-bezier(.2,.7,.2,1) .35s;
+}
+
+
+.luxSignatureText{
+  margin:0 auto;
+
+  max-width:560px;
+
+  font-size:clamp(12px,1.4vw,15px);
+
+  line-height:1.9;
+
+  letter-spacing:.06em;
+
+  color:rgba(255,255,255,.48);
+
+  opacity:0;
+
+  transform:translateY(20px);
+
+  transition:
+    opacity .9s ease .5s,
+    transform .9s cubic-bezier(.2,.7,.2,1) .5s;
+}
+
+
+.luxSignatureMark{
+  margin-top:46px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  gap:12px;
+
+  font-family:monospace;
+
+  font-size:9px;
+
+  letter-spacing:.2em;
+
+  color:rgba(255,255,255,.3);
+
+  opacity:0;
+
+  transition:opacity .8s ease .7s;
+}
+
+
+.luxSignatureMark::before,
+.luxSignatureMark::after{
+  content:"";
+
+  width:42px;
+  height:1px;
+
+  background:rgba(255,255,255,.18);
+}
+
+
+/* active */
+
+#luxSignature.lux-signature-active
+.luxSignatureEyebrow{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+#luxSignature.lux-signature-active
+.luxSignatureTitle{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+#luxSignature.lux-signature-active
+.luxSignatureLine{
+  width:min(420px,70vw);
+}
+
+
+#luxSignature.lux-signature-active
+.luxSignatureText{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+#luxSignature.lux-signature-active
+.luxSignatureMark{
+  opacity:1;
+}
+
+
+/* subtle ambient movement */
+
+#luxSignature .luxAmbient{
+  position:absolute;
+
+  width:420px;
+  height:420px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,255,255,.035),
+      transparent 68%
+    );
+
+  filter:blur(8px);
+
+  pointer-events:none;
+
+  animation:
+    luxAmbientMove 9s ease-in-out infinite alternate;
+}
+
+
+#luxSignature .luxAmbient.one{
+  left:-180px;
+  top:20%;
+}
+
+
+#luxSignature .luxAmbient.two{
+  right:-180px;
+  bottom:10%;
+
+  animation-delay:-4s;
+}
+
+
+@keyframes luxAmbientMove{
+
+  from{
+    transform:translate3d(0,0,0) scale(.92);
+  }
+
+  to{
+    transform:translate3d(45px,-25px,0) scale(1.08);
+  }
+
+}
+
+
+/* mobile */
+
+@media(max-width:700px){
+
+  #luxSignature{
+    min-height:460px;
+    padding-left:24px;
+    padding-right:24px;
+  }
+
+  .luxSignatureTitle{
+    font-size:clamp(42px,15vw,72px);
+  }
+
+  .luxSignatureText{
+    font-size:12px;
+    line-height:1.8;
+  }
+
+  #luxSignature .luxAmbient{
+    width:260px;
+    height:260px;
+  }
+
+}
+
+
+/* reduced motion */
+
+@media(prefers-reduced-motion:reduce){
+
+  #luxSignature .luxAmbient{
+    animation:none;
+  }
+
+  .luxSignatureEyebrow,
+  .luxSignatureTitle,
+  .luxSignatureText,
+  .luxSignatureMark,
+  .luxSignatureLine{
+    transition:none;
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-interaction-09-js">
+(function(){
+
+  /* ---------- CREATE FINAL SCENE ---------- */
+
+  const bmwSection =
+    document.querySelector(
+      '.bmw-info-section'
+    );
+
+
+  if(!bmwSection){
+    return;
+  }
+
+
+  const signature =
+    document.createElement('section');
+
+  signature.id =
+    'luxSignature';
+
+
+  signature.innerHTML = `
+
+    <div class="luxAmbient one"></div>
+    <div class="luxAmbient two"></div>
+
+    <div class="luxSignatureInner">
+
+      <span class="luxSignatureEyebrow">
+        FINAL SCENE / VEHICLE EXPERIENCE
+      </span>
+
+      <h2 class="luxSignatureTitle">
+        DRIVEN<br>
+        <span>BY DESIGN</span>
+      </h2>
+
+      <div class="luxSignatureLine"></div>
+
+      <p class="luxSignatureText">
+        A cinematic exploration of form,
+        engineering and motion — built around
+        the machine and the experience it creates.
+      </p>
+
+      <div class="luxSignatureMark">
+        END OF EXPERIENCE
+      </div>
+
+    </div>
+
+  `;
+
+
+  /*
+    Put signature after the existing BMW
+    information section, preserving all
+    existing content.
+  */
+
+  bmwSection.insertAdjacentElement(
+    'afterend',
+    signature
+  );
+
+
+  /* ---------- SCROLL REVEAL ---------- */
+
+  if(
+    'IntersectionObserver' in window
+  ){
+
+    const observer =
+      new IntersectionObserver(
+        function(entries){
+
+          entries.forEach(
+            function(entry){
+
+              if(entry.isIntersecting){
+
+                signature.classList.add(
+                  'lux-signature-active'
+                );
+
+                observer.unobserve(
+                  signature
+                );
+
+              }
+
+            }
+          );
+
+        },
+        {
+          threshold:.28,
+          rootMargin:'-8% 0 -15% 0'
+        }
+      );
+
+
+    observer.observe(signature);
+
+  }else{
+
+    signature.classList.add(
+      'lux-signature-active'
+    );
+
+  }
+
+})();
+</script>
+
+
+
+
+
+
+
+
+<style id="luxury-13-final">
+
+/* =========================================================
+   LUXURY 13 — FINAL POLISH
+   ========================================================= */
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  overflow-x:hidden;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+
+
+/* ---------- cinematic section separators ---------- */
+
+#hero,
+#engine,
+.bmw-info-section,
+#luxSignature,
+#luxFinalFooter{
+  position:relative;
+}
+
+
+#hero::after,
+#engine::after,
+.bmw-info-section::after{
+  content:"";
+
+  position:absolute;
+
+  left:clamp(20px,7vw,100px);
+  right:clamp(20px,7vw,100px);
+  bottom:0;
+
+  height:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.10),
+      transparent
+    );
+
+  pointer-events:none;
+}
+
+
+/* ---------- premium text selection ---------- */
+
+::selection{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+
+
+/* ---------- image / canvas rendering ---------- */
+
+canvas{
+  display:block;
+  max-width:100%;
+}
+
+
+/* ---------- buttons ---------- */
+
+button,
+.ctrl,
+a{
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+button:focus-visible,
+a:focus-visible{
+  outline:1px solid rgba(255,255,255,.55);
+  outline-offset:4px;
+}
+
+
+/* ---------- luxury loading ---------- */
+
+#loading{
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+
+#loadingText{
+  letter-spacing:.25em !important;
+}
+
+
+/* ---------- cinematic hover ---------- */
+
+@media(hover:hover) and (pointer:fine){
+
+  .ctrl{
+    transition:
+      transform .35s ease,
+      background .35s ease,
+      border-color .35s ease,
+      color .35s ease;
+  }
+
+  .ctrl:hover{
+    transform:translateY(-1px);
+  }
+
+
+  .bmw-info-grid > div{
+    transition:
+      transform .6s cubic-bezier(.2,.7,.2,1),
+      border-color .5s ease;
+  }
+
+  .bmw-info-grid > div:hover{
+    transform:translateX(4px);
+  }
+
+
+  .luxTechMetric{
+    transition:
+      background .45s ease,
+      transform .45s ease;
+  }
+
+  .luxTechMetric:hover{
+    background:
+      rgba(255,255,255,.045);
+
+    transform:translateY(-2px);
+  }
+
+}
+
+
+/* ---------- reduce visual load on small devices ---------- */
+
+@media(max-width:700px){
+
+  body{
+    font-size:14px;
+  }
+
+
+  #hero::after,
+  #engine::after,
+  .bmw-info-section::after{
+    left:18px;
+    right:18px;
+  }
+
+
+  .luxTechGrid{
+    margin-top:24px;
+  }
+
+
+  #scene{
+    max-width:100vw;
+    overflow:hidden;
+  }
+
+}
+
+
+/* ---------- very small screens ---------- */
+
+@media(max-width:420px){
+
+  .luxFooterMeta{
+    grid-template-columns:1fr !important;
+  }
+
+}
+
+
+/* ---------- reduced motion ---------- */
+
+@media(prefers-reduced-motion:reduce){
+
+  html{
+    scroll-behavior:auto;
+  }
+
+  *,
+  *::before,
+  *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+
+}
+
+</style>
+
+
+<script id="luxury-13-final-js">
+(function(){
+
+  /* =====================================================
+     FINAL POLISH
+     ===================================================== */
+
+
+  /* ---------- protect against accidental horizontal
+     overflow ---------- */
+
+  function cleanOverflow(){
+
+    document.documentElement.style.overflowX='hidden';
+
+    document.body.style.overflowX='hidden';
+
+  }
+
+
+  cleanOverflow();
+
+
+  window.addEventListener(
+    'resize',
+    cleanOverflow,
+    {passive:true}
+  );
+
+
+  /* =====================================================
+     CINEMATIC PAGE PROGRESS
+     ===================================================== */
+
+  let progressBar =
+    document.getElementById(
+      'luxFinalProgress'
+    );
+
+
+  if(!progressBar){
+
+    progressBar =
+      document.createElement('div');
+
+    progressBar.id =
+      'luxFinalProgress';
+
+
+    progressBar.style.cssText = `
+      position:fixed;
+      left:0;
+      top:0;
+      width:0;
+      height:1px;
+      z-index:10001;
+      pointer-events:none;
+      background:rgba(255,255,255,.72);
+      box-shadow:0 0 12px rgba(255,255,255,.16);
+      transform-origin:left;
+      transition:width .08s linear;
+    `;
+
+
+    document.body.appendChild(
+      progressBar
+    );
+
+  }
+
+
+  let progressTicking=false;
+
+
+  function updateFinalProgress(){
+
+    if(progressTicking) return;
+
+    progressTicking=true;
+
+
+    requestAnimationFrame(
+      function(){
+
+        const scrollTop =
+          window.scrollY || 0;
+
+
+        const maxScroll =
+          Math.max(
+            document.documentElement.scrollHeight -
+            window.innerHeight,
+            1
+          );
+
+
+        const percent =
+          Math.max(
+            0,
+            Math.min(
+              100,
+              (scrollTop / maxScroll) * 100
+            )
+          );
+
+
+        progressBar.style.width =
+          percent + '%';
+
+
+        progressTicking=false;
+
+      }
+    );
+
+  }
+
+
+  window.addEventListener(
+    'scroll',
+    updateFinalProgress,
+    {passive:true}
+  );
+
+
+  updateFinalProgress();
+
+
+  /* =====================================================
+     SECTION ENTRY POLISH
+     ===================================================== */
+
+  const revealTargets = [
+    '.sectionHead',
+    '.performance',
+    '.bottomNote',
+    '.bmw-info-section',
+    '#luxSignature',
+    '#luxFinalFooter'
+  ];
+
+
+  const revealElements =
+    document.querySelectorAll(
+      revealTargets.join(',')
+    );
+
+
+  revealElements.forEach(
+    function(element){
+
+      element.dataset.luxReady='true';
+
+    }
+  );
+
+
+  /* =====================================================
+     PAUSE EXTRA EFFECTS WHEN TAB IS HIDDEN
+     ===================================================== */
+
+  document.addEventListener(
+    'visibilitychange',
+    function(){
+
+      if(
+        document.hidden
+      ){
+
+        document.body.dataset.luxPaused='true';
+
+      }else{
+
+        delete document.body.dataset.luxPaused;
+
+      }
+
+    }
+  );
+
+
+  /* =====================================================
+     FINAL CONSOLE STATUS
+     ===================================================== */
+
+  console.log(
+    '%c LUXURY VEHICLE EXPERIENCE READY ',
+    'background:#111;color:#fff;padding:6px 10px;'
+  );
+
+})();
+</script>
+
+
+<style id="performance-clean-layout">
+/* =========================================================
+   PERFORMANCE CLEAN LAYOUT
+   Keep ONE performance panel + ONE technical note.
+   ========================================================= */
+
+#engine .performance{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  max-width:1100px !important;
+  margin:70px auto 0 !important;
+  padding:32px !important;
+  box-sizing:border-box !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
+
+#engine .performanceHead{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:flex-end !important;
+  gap:24px !important;
+  margin-bottom:32px !important;
+}
+
+#engine .performanceTitle{
+  display:block !important;
+  font-size:clamp(24px,3vw,42px) !important;
+  line-height:1.05 !important;
+  letter-spacing:.08em !important;
+}
+
+#engine .verify{
+  display:block !important;
+  font-size:10px !important;
+  letter-spacing:.16em !important;
+  opacity:.55 !important;
+  text-align:right !important;
+}
+
+#engine .metrics{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:1px !important;
+  width:100% !important;
+}
+
+#engine .metric{
+  min-width:0 !important;
+  padding:24px 20px !important;
+  box-sizing:border-box !important;
+}
+
+#engine .metricValue{
+  display:block !important;
+  font-size:clamp(26px,3vw,48px) !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+
+#engine .metricLabel{
+  margin-top:10px !important;
+  font-size:9px !important;
+  letter-spacing:.16em !important;
+  opacity:.55 !important;
+}
+
+#engine .bottomNote{
+  position:relative !important;
+  display:block !important;
+  max-width:1100px !important;
+  margin:24px auto 0 !important;
+  padding:18px 0 0 !important;
+  box-sizing:border-box !important;
+  opacity:.5 !important;
+  transform:none !important;
+}
+
+/* Mobile */
+@media(max-width:700px){
+
+  #engine .performance{
+    margin-top:45px !important;
+    padding:22px 16px !important;
+  }
+
+  #engine .performanceHead{
+    display:block !important;
+    margin-bottom:24px !important;
+  }
+
+  #engine .verify{
+    margin-top:10px !important;
+    text-align:left !important;
+  }
+
+  #engine .metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  #engine .metric{
+    padding:20px 14px !important;
+  }
+
+  #engine .metricValue{
+    font-size:28px !important;
+  }
+
+  #engine .bottomNote{
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+}
+</style>
+
+
+<style id="bmw-source-spacing-fix">
+.bmw-source-note{
+  margin-top:10px !important;
+  padding-top:0 !important;
+}
+
+.bmw-info-section .bmw-source-note{
+  line-height:1.4 !important;
+}
+
+.bmw-info-section .bmw-info-inner{
+  padding-bottom:20px !important;
+}
+</style>

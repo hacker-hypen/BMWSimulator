@@ -1,0 +1,15 @@
+# Git
+.git/
+
+# Backup / old versions
+index.*.html
+index.backup*.html
+index.after-*.html
+index.before-*.html
+index.broken-*.html
+
+# Archives
+*.zip
+
+# Old model backup
+models/car.backup.glb
